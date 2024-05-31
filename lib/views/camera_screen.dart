@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import '../res/app_colors.dart';
@@ -15,6 +16,8 @@ import '../view_models/location_permission_view_model.dart';
 import '../view_models/qr_code_view_model.dart';
 import '../widgets/alert_dialog.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:wifi_iot/wifi_iot.dart';
+
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({Key? key}) : super(key: key);
@@ -36,10 +39,18 @@ class _CameraScreenState extends State<CameraScreen>
   bool flashState = false;
   late AnimationController animationController;
   late Animation<double> animation;
+  late GoogleMapController mapController;
 
-  Future<Position>getPosition() async {
-    Position position=await _locationPermissionViewModel.getUpdatedLocation();
-    return position;
+
+  bool _isLoading = true;
+  Position? _currentPosition;
+  getLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _currentPosition =position;
+      _isLoading = false;
+    });
   }
 
 
@@ -47,12 +58,14 @@ class _CameraScreenState extends State<CameraScreen>
 
 
   @override
-  void initState() {
+  initState()  {
     _basketViewModel = BasketViewModel(context);
     _qrCodeViewModel = QrCodeViewModel(context);
-    getPosition();
+    getLocation();
+    // getCurrentLocation();
+    // getPosition();
     super.initState();
-
+    // getUpdatedLocation();
     animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -62,6 +75,8 @@ class _CameraScreenState extends State<CameraScreen>
       end: 1.0,
     ).animate(animationController);
   }
+  
+
 
   @override
   void reassemble() {
@@ -70,6 +85,7 @@ class _CameraScreenState extends State<CameraScreen>
       controller!.pauseCamera();
     }
     controller!.resumeCamera();
+
   }
 
   @override
@@ -87,11 +103,11 @@ class _CameraScreenState extends State<CameraScreen>
               flashState = !flashState;
             });
           },
-          child:
+          child:_isLoading ? null:
           Icon(flashState ? Icons.flash_on_rounded : Icons.flash_off_rounded),
         ),
         body:networkStatus == NetworkStatus.Online
-            ?  Stack(
+            ?  _isLoading ? const Center(child: CircularProgressIndicator()): Stack(
           children: [
             QRView(
               key: qrKey,
@@ -206,18 +222,209 @@ class _CameraScreenState extends State<CameraScreen>
           result = scanData;
           print(result!.code.toString());
         });
+        String results = result!.code.toString();
+        String ID = results.substring(results.length - 2);
+        int? id =int.parse(ID);
+
         final userId = await secureStorage.readData(authentifiedUserId);
 
-        // await _locationPermissionViewModel.getUpdatedLocation().then((position) {
-        if (userId != null) {
-          _qrCodeViewModel
-              .setUserOnTheTable(
-            result!.code.toString(),
-            // position,2*position.accuracy
-          )
-              .then((data) async {
+        await _qrCodeViewModel.getSpaceValidationById(id).then((validation) {
 
-            if (data == false) {
+        if(validation=="gps"){
+          if (userId != null) {
+            _qrCodeViewModel
+                .setUserOnTheTable(
+                result!.code.toString(),
+                _currentPosition,2*_currentPosition!.accuracy
+              // position,2*position.accuracy
+            )
+                .then((data) async {
+
+              if (data == false) {
+                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return  CustomAlertDialog(
+                        title: AppLocalizations.of(context)!.positionTooFar,
+                        content: AppLocalizations.of(context)!.positionTooFarMessage);
+                  },
+                );
+              } else {
+                print(data);
+
+                await secureStorage.writeData(
+                    tableIdKey, data['tableId']);
+                await secureStorage.writeData(
+                    sessionIdKey, data['sessionId']);
+                await secureStorage.writeData(
+                    spaceIdKey,data['spaceId']);
+
+                _basketViewModel
+                    .getLatestBasketByIdTable(
+                    data['tableId'].toString())
+                    .then((_) async {
+
+                  Navigator.pushReplacementNamed(context, menuRoute);
+                })
+                    .catchError((error) {
+                  print(error);
+                });
+              }
+            }).catchError((error) {});
+          }
+          else {
+            _qrCodeViewModel
+                .setGuestOnTheTable(result!.code.toString(),
+                _currentPosition,1.5*_currentPosition!.accuracy
+            ).then((response) async {
+              print(response);
+              if (response ==false) {
+                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return  CustomAlertDialog(
+                        title: AppLocalizations.of(context)!.positionTooFar,
+                        content: AppLocalizations.of(context)!.positionTooFarMessage);
+                  },
+                );
+
+              } else {
+                final spaceId = response.lastname;
+                final tableId = response.username.substring(5);
+                await secureStorage.writeData(spaceIdKey,spaceId!);
+                await secureStorage.writeData(userIdKey,response.id!.toString());
+                await secureStorage.writeData(sessionIdKey, response.sessionId!);
+                await secureStorage.writeData(tableIdKey,tableId);
+                print(tableId);
+                _basketViewModel.getLatestBasketByIdTable(tableId).then((_) async {
+
+
+                  Navigator.pushReplacementNamed(context, menuRoute);
+                })
+                    .catchError((error) {
+                  print(error);
+                });
+              }
+            }).catchError((error) {
+              print(error);
+            });
+          }
+          // }).catchError((error) {
+          //   print(error);
+          // });
+        }else if(validation=="wifi"){
+          _qrCodeViewModel.getWifisBySpaceId(id).then((wifis)  async {
+
+            // Get the list of available Wi-Fi networks
+            List<WifiNetwork> wifiList = await WiFiForIoTPlugin.loadWifiList();
+
+            // Check if the desired network is in the list of available networks
+            bool isNetworkFound = wifiList.any((wifi) => wifis.any((wifiSpace) => wifi.ssid == wifiSpace.ssid));
+            if(isNetworkFound){
+              setState(() {
+                _currentPosition = Position( // Set default values here
+                    latitude: 0.0,
+                    longitude: 0.0,
+                    accuracy: 0.0,
+                    altitude: 0.0,
+                    heading: 0.0,
+                    speed: 0.0,
+                    speedAccuracy: 0.0,
+                    timestamp: DateTime.now());
+              });
+              if (userId != null) {
+                _qrCodeViewModel
+                    .setUserOnTheTable(
+                    result!.code.toString(),
+                    _currentPosition,2*_currentPosition!.accuracy
+                  // position,2*position.accuracy
+                )
+                    .then((data) async {
+
+                  if (data == false) {
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return  CustomAlertDialog(
+                            title: AppLocalizations.of(context)!.positionTooFar,
+                            content: AppLocalizations.of(context)!.positionTooFarMessage);
+                      },
+                    );
+                  } else {
+                    print(data);
+
+                    await secureStorage.writeData(
+                        tableIdKey, data['tableId']);
+                    await secureStorage.writeData(
+                        sessionIdKey, data['sessionId']);
+                    await secureStorage.writeData(
+                        spaceIdKey,data['spaceId']);
+
+                    _basketViewModel
+                        .getLatestBasketByIdTable(
+                        data['tableId'].toString())
+                        .then((_) async {
+
+                      Navigator.pushReplacementNamed(context, menuRoute);
+                    })
+                        .catchError((error) {
+                      print(error);
+                    });
+                  }
+                }).catchError((error) {});
+              }
+              else {
+                _qrCodeViewModel
+                    .setGuestOnTheTable(result!.code.toString(),
+                    _currentPosition,1.5*_currentPosition!.accuracy
+                ).then((response) async {
+                  print(response);
+                  if (response ==false) {
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return  CustomAlertDialog(
+                            title: AppLocalizations.of(context)!.positionTooFar,
+                            content: AppLocalizations.of(context)!.positionTooFarMessage);
+                      },
+                    );
+
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: "data2: ${response.toString()}",
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.grey[800],
+                      textColor: Colors.white,
+                    );
+                    final spaceId = response.lastname;
+                    final tableId = response.username.substring(5);
+                    await secureStorage.writeData(spaceIdKey,spaceId!);
+                    await secureStorage.writeData(userIdKey,response.id!.toString());
+                    await secureStorage.writeData(sessionIdKey, response.sessionId!);
+                    await secureStorage.writeData(tableIdKey,tableId);
+                    print(tableId);
+                    _basketViewModel.getLatestBasketByIdTable(tableId).then((_) async {
+
+
+                      Navigator.pushReplacementNamed(context, menuRoute);
+                    })
+                        .catchError((error) {
+                      print(error);
+                    });
+                  }
+                }).catchError((error) {
+                  print(error);
+                });
+              }
+              // }).catchError((error) {
+              //   print(error);
+              // });
+            }else{
               Navigator.pop(context);
               showDialog(
                 context: context,
@@ -227,77 +434,12 @@ class _CameraScreenState extends State<CameraScreen>
                       content: AppLocalizations.of(context)!.positionTooFarMessage);
                 },
               );
-            } else {
-              print(data);
-
-              await secureStorage.writeData(
-                  tableIdKey, data['tableId']);
-              await secureStorage.writeData(
-                  sessionIdKey, data['sessionId']);
-              await secureStorage.writeData(
-                  spaceIdKey,data['spaceId']);
-
-              _basketViewModel
-                  .getLatestBasketByIdTable(
-                  data['tableId'].toString())
-                  .then((_) async {
-
-                Navigator.pushReplacementNamed(context, menuRoute);
-              })
-                  .catchError((error) {
-                print(error);
-              });
             }
-          }).catchError((error) {});
-        } else {
-          _qrCodeViewModel
-              .setGuestOnTheTable(result!.code.toString(),
-            // position,1.5*position.accuracy
-          ).then((response) async {
-
-            print(response);
-            if (response ==false) {
-              Navigator.pop(context);
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return  CustomAlertDialog(
-                      title: AppLocalizations.of(context)!.positionTooFar,
-                      content: AppLocalizations.of(context)!.positionTooFarMessage);
-                },
-              );
-
-            } else {
-              Fluttertoast.showToast(
-                msg: "data2: ${response.toString()}",
-                toastLength: Toast.LENGTH_LONG,
-                gravity: ToastGravity.BOTTOM,
-                backgroundColor: Colors.grey[800],
-                textColor: Colors.white,
-              );
-              final spaceId = response.lastname;
-              final tableId = response.username.substring(5);
-              await secureStorage.writeData(spaceIdKey,spaceId!);
-              await secureStorage.writeData(userIdKey,response.id!.toString());
-              await secureStorage.writeData(sessionIdKey, response.sessionId!);
-              await secureStorage.writeData(tableIdKey,tableId);
-              print(tableId);
-              _basketViewModel.getLatestBasketByIdTable(tableId).then((_) async {
-
-
-                Navigator.pushReplacementNamed(context, menuRoute);
-              })
-                  .catchError((error) {
-                print(error);
-              });
-            }
-          }).catchError((error) {
-            print(error);
           });
         }
-        // }).catchError((error) {
-        //   print(error);
-        // });
+        });
+        // await _locationPermissionViewModel.getUpdatedLocation().then((position) {
+
       }
     });
   }

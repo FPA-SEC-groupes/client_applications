@@ -6,8 +6,6 @@ import 'package:hello_way_client/services/network_service.dart';
 import 'package:hello_way_client/services/push_notification_service.dart';
 import 'package:hello_way_client/utils/routes.dart';
 import 'package:hello_way_client/view_models/language_provider.dart';
-import 'package:hello_way_client/views/ShiftPage.dart';
-import 'package:hello_way_client/views/add_space.dart';
 
 import 'package:hello_way_client/views/basket.dart';
 import 'package:hello_way_client/views/camera_screen.dart';
@@ -149,7 +147,7 @@ class MyApp extends StatelessWidget {
       spaceLocationRoute: (context) {
         return SpaceLocation();
       },
-      '/add-space': (context) => AddSpace(),
+
 
     });
     }));

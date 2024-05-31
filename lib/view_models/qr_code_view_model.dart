@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hello_way_client/models/WifiInfo.dart';
 
 import '../interceptors/dio_interceptor.dart';
 import '../models/space.dart';
@@ -19,14 +20,14 @@ class QrCodeViewModel {
 
 
 
-  Future<dynamic> setUserOnTheTable(String qrCode,
+  Future<dynamic> setUserOnTheTable(String qrCode, position,accuracy
 
       ) async {
     // Display the QR code in a toast
-    Position position = new Position(longitude:36.4959905, latitude:  10.5949871, timestamp: null, accuracy: 5, altitude: 0.0, heading: 0.0, speed: 0.0, speedAccuracy: 0.0);
+    // Position position = new Position(longitude:36.4959905, latitude:  10.5949871, timestamp: null, accuracy: 5, altitude: 0.0, heading: 0.0, speed: 0.0, speedAccuracy: 0.0);
 
     // Assuming accuracy is a separate measurement not provided in the SQL
-    double accuracy = 5.0; // Example accuracy value, adjust as necessary
+    // double accuracy = 5.0; // Example accuracy value, adjust as necessary
 
     // Define the API endpoint URL
     final url = '$baseUrl/api/auth/qr_Code_for_app_user/$qrCode/userLatitude/${position.latitude}/userLongitude/${position.longitude}/$accuracy';
@@ -53,21 +54,11 @@ class QrCodeViewModel {
 
   final Dio dio = Dio();
 
-  Future<dynamic> setGuestOnTheTable(String qrCode,
-      // Position position,double accuracy
+  Future<dynamic> setGuestOnTheTable(String qrCode, Position? position, double accuracy,
       ) async {
 
-
-
-
-    Position position = new Position(longitude:36.4959905, latitude:  10.5949871, timestamp: null, accuracy: 5, altitude: 0.0, heading: 0.0, speed: 0.0, speedAccuracy: 0.0);
-
-    // Assuming accuracy is a separate measurement not provided in the SQL
-    double accuracy = 5.0; // Example accuracy value, adjust as necessary
-
-
     final url =
-        '$baseUrl/api/auth/signin/qr_Code/$qrCode/userLatitude/${position.latitude}/userLongitude/${position.longitude}/${accuracy}';
+        '$baseUrl/api/auth/signin/qr_Code/$qrCode/userLatitude/${position!.latitude}/userLongitude/${position!.longitude}/${accuracy}';
 
     var cookie= await secureStorage.readData('jwtToken');
     final response;
@@ -113,4 +104,59 @@ class QrCodeViewModel {
 
     }
   }
+  Future<String?> getSpaceValidationById(int spaceId) async {
+    final url = '$baseUrl/api/auth/$spaceId/validation';
+
+    try {
+      final response = await dioInterceptor.dio.get(url);
+
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        Fluttertoast.showToast(
+          msg: "Failed to get validation: ${response.statusCode}",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+        return null;
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error occurred: $e",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return null;
+    }
+  }
+  Future<List<WifiInfo>> getWifisBySpaceId(int spaceId) async {
+    final url = '$baseUrl/api/auth/space/$spaceId';
+
+    try {
+      final response = await dioInterceptor.dio.get(url);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> wifiData = response.data;
+        List<WifiInfo> wifis = wifiData.map((wifiJson) => WifiInfo.fromJson(wifiJson)).toList();
+        return wifis;
+      } else {
+        Fluttertoast.showToast(
+          msg: "Failed to get WiFis: ${response.statusCode}",
+          // ... other toast parameters
+        );
+        return []; // Return an empty list on failure
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error occurred: $e",
+        // ... other toast parameters
+      );
+      return []; // Return an empty list on error
+    }
+  }
+
 }
