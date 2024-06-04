@@ -23,14 +23,14 @@ class QrCodeViewModel {
   Future<dynamic> setUserOnTheTable(String qrCode, position,accuracy
 
       ) async {
-    // Display the QR code in a toast
-    // Position position = new Position(longitude:36.4959905, latitude:  10.5949871, timestamp: null, accuracy: 5, altitude: 0.0, heading: 0.0, speed: 0.0, speedAccuracy: 0.0);
-
-    // Assuming accuracy is a separate measurement not provided in the SQL
-    // double accuracy = 5.0; // Example accuracy value, adjust as necessary
-
-    // Define the API endpoint URL
     final url = '$baseUrl/api/auth/qr_Code_for_app_user/$qrCode/userLatitude/${position.latitude}/userLongitude/${position.longitude}/$accuracy';
+    Fluttertoast.showToast(
+      msg: "Failed to get validation: ${url}",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+    );
     final response = await dioInterceptor.dio.post(url);
 
     // Handle the response from the API
@@ -104,7 +104,7 @@ class QrCodeViewModel {
 
     }
   }
-  Future<String?> getSpaceValidationById(int spaceId) async {
+  Future<dynamic> getSpaceValidationById(int spaceId) async {
     final url = '$baseUrl/api/auth/$spaceId/validation';
 
     try {
@@ -113,23 +113,11 @@ class QrCodeViewModel {
       if (response.statusCode == 200) {
         return response.data;
       } else {
-        Fluttertoast.showToast(
-          msg: "Failed to get validation: ${response.statusCode}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
+
         return null;
       }
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: "Error occurred: $e",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
+
       return null;
     }
   }

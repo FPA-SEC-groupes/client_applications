@@ -228,9 +228,9 @@ class _CameraScreenState extends State<CameraScreen>
 
         final userId = await secureStorage.readData(authentifiedUserId);
 
-        await _qrCodeViewModel.getSpaceValidationById(id).then((validation) {
+        await _qrCodeViewModel.getSpaceValidationById(id).then((response) {
 
-        if(validation=="gps"){
+        if(response['validation']=="gps"){
           if (userId != null) {
             _qrCodeViewModel
                 .setUserOnTheTable(
@@ -314,8 +314,9 @@ class _CameraScreenState extends State<CameraScreen>
           // }).catchError((error) {
           //   print(error);
           // });
-        }else if(validation=="wifi"){
-          _qrCodeViewModel.getWifisBySpaceId(id).then((wifis)  async {
+        }else if(response['validation']=="wifi"){
+          final spaceId= response['id'];
+          _qrCodeViewModel.getWifisBySpaceId(spaceId).then((wifis)  async {
 
             // Get the list of available Wi-Fi networks
             List<WifiNetwork> wifiList = await WiFiForIoTPlugin.loadWifiList();
