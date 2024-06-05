@@ -106,5 +106,7 @@
   "noRating": "لا توجد تقييمات",
   "noNotifications": "لا توجد إشعارات",
   "noBooking": "لم تقم بأي حجز حتى الآن",
-  "emailNotAssociated": "البريد الإلكتروني المقدم غير مرتبط بحساب مستخدم"
+  "emailNotAssociated": "البريد الإلكتروني المقدم غير مرتبط بحساب مستخدم",
+  "tableNotActive": "الطاولة غير نشطة.",
+  "tableNotActiveMessage": "الطاولة غير نشطة"
 }

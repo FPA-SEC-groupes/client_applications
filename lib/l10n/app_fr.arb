@@ -127,9 +127,10 @@
   "noNotifications": "Aucune notification",
   "noBooking":"Vous n'avez passé aucune réservation pour le moment",
   "passwordResetEmail":"Veuillez fournir votre adresse e-mail, et nous vous enverrons un nouveau mot de passe",
-  "emailNotAssociated": "L'adresse e-mail fournie n'est pas associée à un compte utilisateur"
+  "emailNotAssociated": "L'adresse e-mail fournie n'est pas associée à un compte utilisateur",
 
-
+  "tableNotActive": "La table n'est pas active",
+  "tableNotActiveMessage": "Table non active"
 
 
           }

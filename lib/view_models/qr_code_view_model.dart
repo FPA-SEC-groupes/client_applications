@@ -20,36 +20,23 @@ class QrCodeViewModel {
 
 
 
-  Future<dynamic> setUserOnTheTable(String qrCode, position,accuracy
-
-      ) async {
+  Future<dynamic> setUserOnTheTable(String qrCode, position, accuracy) async {
     final url = '$baseUrl/api/auth/qr_Code_for_app_user/$qrCode/userLatitude/${position.latitude}/userLongitude/${position.longitude}/$accuracy';
-    Fluttertoast.showToast(
-      msg: "Failed to get validation: ${url}",
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.red,
-      textColor: Colors.white,
-    );
     final response = await dioInterceptor.dio.post(url);
 
     // Handle the response from the API
     if (response.statusCode == 200) {
       if (response.data == "the user not in the space so we are sorry you cant be sated in this table") {
-        Fluttertoast.showToast(
-          msg: "data ${response.data}",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.grey[800],
-          textColor: Colors.white,
-        );
-        return false;
+        return {'status': 'not_in_space'};
+      } else if (response.data == "The table is not active.") {
+        return {'status': 'table_not_active'};
       } else {
         return response.data;
       }
     }
     return null; // Ensure the function returns a value on all code paths
   }
+
 
 
   final Dio dio = Dio();

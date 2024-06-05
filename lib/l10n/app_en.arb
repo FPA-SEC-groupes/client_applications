@@ -125,9 +125,10 @@
   "noNotifications": "No notifications",
   "noBooking":"You haven't made any bookings at the moment.",
   "passwordResetEmail":"Please provide your email address, and we will send you a new password",
-  "emailNotAssociated": "The email address provided is not associated with any user account"
+  "emailNotAssociated": "The email address provided is not associated with any user account",
 
-
+  "tableNotActive": "Table Not Active",
+  "tableNotActiveMessage": "Table is not active."
     }
 
 

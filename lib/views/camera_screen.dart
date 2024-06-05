@@ -231,47 +231,56 @@ class _CameraScreenState extends State<CameraScreen>
         await _qrCodeViewModel.getSpaceValidationById(id).then((response) {
 
         if(response['validation']=="gps"){
-          if (userId != null) {
-            _qrCodeViewModel
-                .setUserOnTheTable(
-                result!.code.toString(),
-                _currentPosition,2*_currentPosition!.accuracy
-              // position,2*position.accuracy
-            )
-                .then((data) async {
-
-              if (data == false) {
+          if (userId != null) {_qrCodeViewModel
+              .setUserOnTheTable(
+              result!.code.toString(),
+              _currentPosition, 2 * _currentPosition!.accuracy
+          )
+              .then((data) async {
+            if (data != null && data is Map<String, dynamic>) {
+              if (data['status'] == 'not_in_space') {
                 Navigator.pop(context);
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return  CustomAlertDialog(
-                        title: AppLocalizations.of(context)!.positionTooFar,
-                        content: AppLocalizations.of(context)!.positionTooFarMessage);
+                    return CustomAlertDialog(
+                      title: AppLocalizations.of(context)!.positionTooFar,
+                      content: AppLocalizations.of(context)!.positionTooFarMessage,
+                    );
+                  },
+                );
+              } else if (data['status'] == 'table_not_active') {
+                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return CustomAlertDialog(
+                      title: AppLocalizations.of(context)!.tableNotActive,
+                      content: AppLocalizations.of(context)!.tableNotActiveMessage,
+                    );
                   },
                 );
               } else {
-                print(data);
-
-                await secureStorage.writeData(
-                    tableIdKey, data['tableId']);
-                await secureStorage.writeData(
-                    sessionIdKey, data['sessionId']);
-                await secureStorage.writeData(
-                    spaceIdKey,data['spaceId']);
+                await secureStorage.writeData(tableIdKey, data['tableId']);
+                await secureStorage.writeData(sessionIdKey, data['sessionId']);
+                await secureStorage.writeData(spaceIdKey, data['spaceId']);
 
                 _basketViewModel
-                    .getLatestBasketByIdTable(
-                    data['tableId'].toString())
+                    .getLatestBasketByIdTable(data['tableId'].toString())
                     .then((_) async {
-
                   Navigator.pushReplacementNamed(context, menuRoute);
-                })
-                    .catchError((error) {
+                }).catchError((error) {
                   print(error);
                 });
               }
-            }).catchError((error) {});
+            } else {
+              // Handle the case where data is null or not as expected
+              print('Unexpected response data: $data');
+            }
+          }).catchError((error) {
+            print(error);
+          });
+
           }
           else {
             _qrCodeViewModel
