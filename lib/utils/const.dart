@@ -9,6 +9,7 @@ const sessionIdKey="SessionId";
 const userIdKey="UserId";
 const basketIdKey="BasketId";
 const authentifiedUserId="AuthentifiedUserId";
+const numberOfRestrictions="numberOfRestrictions";
 const commandIdKey="CommandId";
 const selectedCategoriesKey="SelectedCategories";
 const switchValueKey="SwitchValue";

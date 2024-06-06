@@ -10,10 +10,11 @@ class User {
   String? birthday;
   String? phone;
   String? sessionId;
+  int? numberOfRestrictions;
   String? image;
   List<dynamic>? role;
 
-  User({ required this.username,required this.email, this.password,this.role, this.phone,this.id, this.name,this.lastname,this.birthday,this.sessionId,this.image});
+  User({ required this.username,required this.email, this.password,this.role, this.phone,this.id, this.name,this.lastname,this.birthday,this.sessionId, this.numberOfRestrictions ,this.image});
 
 
   Map<String, dynamic> toJson() {
@@ -42,6 +43,8 @@ class User {
       role: json['roles'],
       phone: json['phone'],
      sessionId: json['sessionId'],
+        numberOfRestrictions: json['numberOfRestrictions']
+
 
     );
   }

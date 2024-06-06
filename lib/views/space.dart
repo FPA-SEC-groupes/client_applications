@@ -31,18 +31,31 @@ class _DetailsSpaceState extends State<DetailsSpace> {
   List<Widget> _pages = [];
   Timer? _timer;
   bool authentifiedUser = false;
+  late int numberOfRestriction = 0;
 
   Future<void> verifyAuthentication() async {
     String? userId = await secureStorage.readData(authentifiedUserId);
-    setState(() {
-      authentifiedUser = userId != null;
-    });
+    String? numberOfRestrictionsString = await secureStorage.readData(numberOfRestrictions);
+    if (numberOfRestrictionsString != null) {
+      int? numberOfRestriction1 = int.tryParse(numberOfRestrictionsString);
+      setState(() {
+        authentifiedUser = userId != null;
+        numberOfRestriction = numberOfRestriction1 ?? 0;
+      });
+    } else {
+      setState(() {
+        authentifiedUser = userId != null;
+        numberOfRestriction = 0; // Default value if the string is null
+      });
+    }
+
   }
+
 
   @override
   void initState() {
-    verifyAuthentication();
     super.initState();
+    verifyAuthentication();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _pages = widget.space.images!.isEmpty
@@ -236,7 +249,8 @@ class _DetailsSpaceState extends State<DetailsSpace> {
               ),
             ],
           ),
-          Align(
+          if( numberOfRestriction! <=3)
+            Align(
             alignment: Alignment.bottomCenter,
             child: Container(
               color: themeProvider.isDarkMode ? Colors.grey[900] : Colors.white,
@@ -249,7 +263,8 @@ class _DetailsSpaceState extends State<DetailsSpace> {
                         borderRadius: BorderRadius.circular(5.0),
                         color: orange,
                       ),
-                      child: MaterialButton(
+                      child:
+                      MaterialButton(
                         height: 50,
                         onPressed: () {
                           authentifiedUser
@@ -309,7 +324,9 @@ class _DetailsSpaceState extends State<DetailsSpace> {
                 ],
               ),
             ),
-          ),
+          )
+          else
+            Text(""),
         ],
       )
           : Center(

@@ -36,12 +36,15 @@ class LoginViewModel{
         final user = User.fromJson(data);
         await secureStorage.writeData(userIdKey,user.id.toString());
         await secureStorage.writeData(authentifiedUserId,user.id.toString());
+        await secureStorage.writeData(numberOfRestrictions,user.numberOfRestrictions.toString());
+        String? numberOfRestrictionsString = await secureStorage.readData(numberOfRestrictions);
+        print(numberOfRestrictionsString);
         List<Cookie> cookies = response.headers.map['set-cookie']!
             .map((s) => Cookie.fromSetCookieValue(s))
             .toList();
         print(  response.headers['set-cookie']);
         for (Cookie cookie in cookies) {
-          if (cookie.name == 'helloWay') {;
+          if (cookie.name == 'helloWay') {
             await secureStorage.writeData("jwtToken", cookie.toString());
 
 
