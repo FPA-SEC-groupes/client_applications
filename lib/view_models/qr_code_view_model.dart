@@ -41,25 +41,21 @@ class QrCodeViewModel {
 
   final Dio dio = Dio();
 
-  Future<dynamic> setGuestOnTheTable(String qrCode, Position? position, double accuracy,
-      ) async {
-
+  Future<dynamic> setGuestOnTheTable(String qrCode, Position? position, double accuracy) async {
     final url =
         '$baseUrl/api/auth/signin/qr_Code/$qrCode/userLatitude/${position!.latitude}/userLongitude/${position!.longitude}/${accuracy}';
 
-    var cookie= await secureStorage.readData('jwtToken');
+    var cookie = await secureStorage.readData('jwtToken');
+
     final response;
-    if(cookie==null) {
-
-
+    if (cookie == null) {
       response = await dio.post(
         url,
       );
-    }else{
+    } else {
       response = await dioInterceptor.dio.post(
         url,
       );
-
     }
 
     if (response.statusCode == 200) {
@@ -67,12 +63,10 @@ class QrCodeViewModel {
       print(response.data);
 
       if (response.data == "the user not in the space so we are sorry you cant be connected") {
-
-
         return false;
       } else {
         print(response.data);
-        final user = User.fromJson(response.data);
+        // final user = User.fromJson(response.data);
 
         List<dynamic> cookies = response.headers.map['set-cookie']!
             .map((s) => Cookie.fromSetCookieValue(s))
@@ -84,13 +78,15 @@ class QrCodeViewModel {
             print("passed cookie  " + cookie.toString());
           }
         }
-        return user;
 
-
+        return response.data;
       }
-
     }
+
+    // Add this return statement for other status codes
+    return null;
   }
+
   Future<dynamic> getSpaceValidationById(int spaceId) async {
     final url = '$baseUrl/api/auth/$spaceId/validation';
 
@@ -119,17 +115,11 @@ class QrCodeViewModel {
         List<WifiInfo> wifis = wifiData.map((wifiJson) => WifiInfo.fromJson(wifiJson)).toList();
         return wifis;
       } else {
-        Fluttertoast.showToast(
-          msg: "Failed to get WiFis: ${response.statusCode}",
-          // ... other toast parameters
-        );
+
         return []; // Return an empty list on failure
       }
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: "Error occurred: $e",
-        // ... other toast parameters
-      );
+
       return []; // Return an empty list on error
     }
   }

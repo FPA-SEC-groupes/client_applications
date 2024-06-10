@@ -223,15 +223,13 @@ class _CameraScreenState extends State<CameraScreen>
           print(result!.code.toString());
         });
         String results = result!.code.toString();
-        String ID = results.substring(results.length - 2);
+        String ID = results.substring(results.length - 1);
         int? id =int.parse(ID);
-
         final userId = await secureStorage.readData(authentifiedUserId);
-
         await _qrCodeViewModel.getSpaceValidationById(id).then((response) {
-
-        if(response['validation']=="gps"){
-          if (userId != null) {_qrCodeViewModel
+        if(response['validation'].toString()=="gps"){
+          if (userId != null) {
+            _qrCodeViewModel
               .setUserOnTheTable(
               result!.code.toString(),
               _currentPosition, 2 * _currentPosition!.accuracy
@@ -300,11 +298,11 @@ class _CameraScreenState extends State<CameraScreen>
                 );
 
               } else {
-                final spaceId = response.lastname;
-                final tableId = response.username.substring(5);
+                final spaceId = response['lastname'];
+                final tableId = response['username'].substring(5);
                 await secureStorage.writeData(spaceIdKey,spaceId!);
-                await secureStorage.writeData(userIdKey,response.id!.toString());
-                await secureStorage.writeData(sessionIdKey, response.sessionId!);
+                await secureStorage.writeData(userIdKey,response['id']!.toString());
+                await secureStorage.writeData(sessionIdKey, response['sessionId']!);
                 await secureStorage.writeData(tableIdKey,tableId);
                 print(tableId);
                 _basketViewModel.getLatestBasketByIdTable(tableId).then((_) async {
@@ -323,7 +321,8 @@ class _CameraScreenState extends State<CameraScreen>
           // }).catchError((error) {
           //   print(error);
           // });
-        }else if(response['validation']=="wifi"){
+        }
+        else if(response['validation'].toString()=="wifi"){
           final spaceId= response['id'];
           _qrCodeViewModel.getWifisBySpaceId(spaceId).then((wifis)  async {
 
@@ -388,9 +387,14 @@ class _CameraScreenState extends State<CameraScreen>
               }
               else {
                 _qrCodeViewModel
-                    .setGuestOnTheTable(result!.code.toString(),
-                    _currentPosition,1.5*_currentPosition!.accuracy
+                    .setGuestOnTheTable(
+                    result!.code.toString(),
+                    _currentPosition,2*_currentPosition!.accuracy
                 ).then((response) async {
+                  // Fluttertoast.showToast(
+                  //   msg: "Failed to get WiFis: ${response.toString()}",
+                  //   // ... other toast parameters
+                  // );
                   print(response);
                   if (response ==false) {
                     Navigator.pop(context);
@@ -404,18 +408,16 @@ class _CameraScreenState extends State<CameraScreen>
                     );
 
                   } else {
-                    Fluttertoast.showToast(
-                      msg: "data2: ${response.toString()}",
-                      toastLength: Toast.LENGTH_LONG,
-                      gravity: ToastGravity.BOTTOM,
-                      backgroundColor: Colors.grey[800],
-                      textColor: Colors.white,
-                    );
-                    final spaceId = response.lastname;
-                    final tableId = response.username.substring(5);
+                    // Fluttertoast.showToast(
+                    //   msg: "data: ${response.toString()}",
+                    //   // ... other toast parameters
+                    // );
+
+                    final spaceId = response['lastname'];
+                    final tableId = response['username'].substring(5);
                     await secureStorage.writeData(spaceIdKey,spaceId!);
-                    await secureStorage.writeData(userIdKey,response.id!.toString());
-                    await secureStorage.writeData(sessionIdKey, response.sessionId!);
+                    await secureStorage.writeData(userIdKey,response['id']!.toString());
+                    await secureStorage.writeData(sessionIdKey, response['sessionId']!);
                     await secureStorage.writeData(tableIdKey,tableId);
                     print(tableId);
                     _basketViewModel.getLatestBasketByIdTable(tableId).then((_) async {

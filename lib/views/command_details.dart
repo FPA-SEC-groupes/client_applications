@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hello_way_client/view_models/basket_view_model.dart';
+import 'package:hello_way_client/views/UpdateCommande.dart';
 import 'package:provider/provider.dart';
 import '../../res/app_colors.dart';
 import '../../response/product_with_quantity.dart';
@@ -20,6 +22,7 @@ class CommandDetails extends StatefulWidget {
 
 class _CommandDetailsState extends State<CommandDetails> {
   late final CommandsViewModel _commandsViewModel;
+  late final BasketViewModel _basketViewModel;
   final GlobalKey<ScaffoldMessengerState> _detailsCommandScaffoldKey =
   GlobalKey<ScaffoldMessengerState>();
   Future<List<ProductWithQuantities>> _getProductsByCommandId() async {
@@ -31,6 +34,7 @@ class _CommandDetailsState extends State<CommandDetails> {
   @override
   void initState() {
     _commandsViewModel = CommandsViewModel(context);
+    _basketViewModel = BasketViewModel(context);
     _getProductsByCommandId();
     super.initState();
   }
@@ -149,7 +153,38 @@ class _CommandDetailsState extends State<CommandDetails> {
                 }),
           ),
 
+          if(widget.command.status=="NOT_YET")
 
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5.0), color: orange),
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: MaterialButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>  UpdateCommande(
+                          command: widget.command,
+                          sum: widget.sum,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    AppLocalizations.of(context)!.modifyOrderMessage.replaceAll('%totalSum', widget.command.sum.toString()),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                )),
+          )
+              else
+                Text(''),
         ],
       ):Center(
         child: Padding(

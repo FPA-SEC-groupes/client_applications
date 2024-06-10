@@ -67,13 +67,7 @@ class BasketViewModel {
   Future<void> getLatestBasketByIdTable(String tableId) async {
     final url = '$baseUrl/api/baskets/latest/basket/by_table/$tableId';
     final response = await dioInterceptor.dio.get(url);
-    Fluttertoast.showToast(
-      msg: "data1: ${response.data.toString()}",
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.grey[800],
-      textColor: Colors.white,
-    );
+
     // Handle the response from the API
     if (response.statusCode == 200) {
       final data = response.data;
