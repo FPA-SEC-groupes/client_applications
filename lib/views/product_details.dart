@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hello_way_client/models/product.dart';
+import 'package:hello_way_client/utils/const.dart';
 import 'package:provider/provider.dart';
 import '../../res/app_colors.dart';
 import '../res/strings.dart';
@@ -48,7 +49,6 @@ class _ProductDetailsState extends State<ProductDetails> {
     NetworkStatus networkStatus = Provider.of<NetworkStatus>(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     final product = ModalRoute.of(context)!.settings.arguments as Product;
-
     return ScaffoldMessenger(
       key: _detailsProductScaffoldKey,
       child: Scaffold(
@@ -76,12 +76,23 @@ class _ProductDetailsState extends State<ProductDetails> {
                           Icons.image_outlined,
                           color: gray.withOpacity(0.5),
                         )
-                            : Image.memory(
-                          base64.decode(product.images![0].data),
+                            :
+                        Image.network(
+                          baseUrl+productUrl+product.images![0].fileName, // Assuming product.images![0].url holds the image URL
                           errorBuilder: (context, error, stackTrace) {
                             return Icon(
                               Icons.broken_image,
                               color: gray.withOpacity(0.5),
+                            );
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                                    : null,
+                              ),
                             );
                           },
                         ),

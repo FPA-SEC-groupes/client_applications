@@ -1,6 +1,9 @@
 // const baseUrl="https://backend-production-2a96.up.railway.app";
 const baseUrl = "http://192.168.1.193:8082";
-
+const productUrl="/photos/product/";
+const spaceUrl ="/photos/space/";
+const eventUrl ="/photos/event/";
+const userUrl ="/photos/user/";
 
 List<String> listSpaceCategories= ["Cafes","Restaurant","Bar"];
 const spaceIdKey="SpaceId";

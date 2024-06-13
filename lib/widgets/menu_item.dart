@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hello_way_client/utils/const.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../res/app_colors.dart';
@@ -45,12 +46,22 @@ class _MenuCardState extends State<MenuCard> {
                   Icons.image_outlined,
                   color: gray.withOpacity(0.5),
                 )
-                    : Image.memory(
-                  base64.decode(widget.product.images![widget.product.images!.length - 1].data),
+                    : Image.network(
+                  baseUrl+productUrl+widget.product.images![widget.product.images!.length - 1].fileName, // Assuming the last image's URL is accessed this way
                   errorBuilder: (context, error, stackTrace) {
                     return Icon(
                       Icons.broken_image,
                       color: gray.withOpacity(0.5),
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                            : null,
+                      ),
                     );
                   },
                 ),

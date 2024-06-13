@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hello_way_client/utils/const.dart';
 import '../res/app_colors.dart';
 import '../response/product_with_quantity.dart';
 import 'package:provider/provider.dart';
@@ -48,8 +49,9 @@ class _BasketItemState extends State<BasketItem> {
                       Icons.image_outlined,
                       color: Colors.grey.withOpacity(0.5),
                     )
-                        : Image.memory(
-                        base64.decode(widget.productWithQuantity.product.images![widget.productWithQuantity.product.images!.length - 1].data)),
+                        : Image.network(baseUrl+productUrl+widget.productWithQuantity.product.images![widget.productWithQuantity.product.images!.length - 1].fileName)
+                    // Image.memory(
+                    //     base64.decode(widget.productWithQuantity.product.images![widget.productWithQuantity.product.images!.length - 1].data)),
                   ),
                 ),
               ),

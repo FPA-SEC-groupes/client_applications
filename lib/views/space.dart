@@ -71,9 +71,10 @@ class _DetailsSpaceState extends State<DetailsSpace> {
             child: ClipRRect(
               child: FittedBox(
                 fit: BoxFit.fill,
-                child: Image.memory(
-                  base64.decode(widget.space.images![index].data),
-                ),
+                child: Image.network(baseUrl+spaceUrl+widget.space.images![index].fileName)
+                // Image.memory(
+                //   base64.decode(widget.space.images![index].data),
+                // ),
               ),
             ),
           ),

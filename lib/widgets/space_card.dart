@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hello_way_client/utils/const.dart';
 import 'package:provider/provider.dart';
 import '../models/space.dart';
 import '../res/app_colors.dart';
@@ -33,7 +34,8 @@ class SpaceCard extends StatelessWidget {
                   Icons.image_outlined,
                   color: gray,
                 )
-                    : Image.memory(base64.decode(space.images![0].data)),
+                    : Image.network(baseUrl+spaceUrl+space.images![0].fileName)
+                // Image.memory(base64.decode(space.images![0].data)),
               ),
             ),
             space.rating != null

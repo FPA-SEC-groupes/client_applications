@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hello_way_client/utils/const.dart';
 import 'package:provider/provider.dart';
 import 'package:hello_way_client/widgets/rating_dialog.dart';
 
@@ -54,9 +55,10 @@ class _SpaceInfoState extends State<SpaceInfo> {
             child: ClipRRect(
               child: FittedBox(
                 fit: BoxFit.fill,
-                child: Image.memory(
-                  base64.decode(widget.space.images![index].data),
-                ),
+                child:Image.network(baseUrl+spaceUrl+widget.space.images![index].fileName)
+                // Image.memory(
+                //   base64.decode(widget.space.images![index].data),
+                // ),
               ),
             ),
           ),
