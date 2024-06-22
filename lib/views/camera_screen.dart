@@ -332,6 +332,10 @@ class _CameraScreenState extends State<CameraScreen>
             // Check if the desired network is in the list of available networks
             bool isNetworkFound = wifiList.any((wifi) => wifis.any((wifiSpace) => wifi.ssid == wifiSpace.ssid));
             if(isNetworkFound){
+              Fluttertoast.showToast(
+                msg: "data: ${response.toString()}",
+                // ... other toast parameters
+              );
               setState(() {
                 _currentPosition = Position( // Set default values here
                     latitude: 0.0,
@@ -363,7 +367,10 @@ class _CameraScreenState extends State<CameraScreen>
                       },
                     );
                   } else {
-                    print(data);
+                    Fluttertoast.showToast(
+                      msg: "data: ${data.toString()}",
+                      // ... other toast parameters
+                    );
 
                     await secureStorage.writeData(
                         tableIdKey, data['tableId']);
@@ -408,10 +415,7 @@ class _CameraScreenState extends State<CameraScreen>
                     );
 
                   } else {
-                    // Fluttertoast.showToast(
-                    //   msg: "data: ${response.toString()}",
-                    //   // ... other toast parameters
-                    // );
+
 
                     final spaceId = response['lastname'];
                     final tableId = response['username'].substring(5);
@@ -421,7 +425,6 @@ class _CameraScreenState extends State<CameraScreen>
                     await secureStorage.writeData(tableIdKey,tableId);
                     print(tableId);
                     _basketViewModel.getLatestBasketByIdTable(tableId).then((_) async {
-
 
                       Navigator.pushReplacementNamed(context, menuRoute);
                     })

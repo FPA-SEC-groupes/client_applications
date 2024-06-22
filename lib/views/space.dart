@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_way_client/res/app_colors.dart';
 import 'package:hello_way_client/utils/secure_storage.dart';
+import 'package:hello_way_client/view_models/RestrictionsViewModel.dart';
 import 'package:hello_way_client/views/add_reservation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +19,8 @@ import '../models/theme_provider.dart';
 
 class DetailsSpace extends StatefulWidget {
   final Space space;
-  const DetailsSpace({super.key, required this.space});
+  final nb;
+  const DetailsSpace({super.key, required this.space,this.nb });
 
   @override
   _DetailsSpaceState createState() => _DetailsSpaceState();
@@ -27,35 +29,20 @@ class DetailsSpace extends StatefulWidget {
 class _DetailsSpaceState extends State<DetailsSpace> {
   final PageController _pageController = PageController();
   final SecureStorage secureStorage = SecureStorage();
+  late RestrictionsViewModel _restrictionsViewModel;
   int _currentPage = 0;
   List<Widget> _pages = [];
   Timer? _timer;
   bool authentifiedUser = false;
   late int numberOfRestriction = 0;
 
-  Future<void> verifyAuthentication() async {
-    String? userId = await secureStorage.readData(authentifiedUserId);
-    String? numberOfRestrictionsString = await secureStorage.readData(numberOfRestrictions);
-    if (numberOfRestrictionsString != null) {
-      int? numberOfRestriction1 = int.tryParse(numberOfRestrictionsString);
-      setState(() {
-        authentifiedUser = userId != null;
-        numberOfRestriction = numberOfRestriction1 ?? 0;
-      });
-    } else {
-      setState(() {
-        authentifiedUser = userId != null;
-        numberOfRestriction = 0; // Default value if the string is null
-      });
-    }
 
-  }
 
 
   @override
   void initState() {
     super.initState();
-    verifyAuthentication();
+    _restrictionsViewModel = RestrictionsViewModel(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _pages = widget.space.images!.isEmpty
@@ -250,84 +237,84 @@ class _DetailsSpaceState extends State<DetailsSpace> {
               ),
             ],
           ),
-          if( numberOfRestriction! <=3)
+          if( widget.nb! ==3)
+            Text("")
+          else
             Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              color: themeProvider.isDarkMode ? Colors.grey[900] : Colors.white,
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.0),
-                        color: orange,
-                      ),
-                      child:
-                      MaterialButton(
-                        height: 50,
-                        onPressed: () {
-                          authentifiedUser
-                              ? Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddReservation(space: widget.space),
-                            ),
-                          )
-                              : Navigator.pushNamed(context, loginRoute).then((user) async {
-                            await verifyAuthentication();
-                            await Navigator.push(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                color: themeProvider.isDarkMode ? Colors.grey[900] : Colors.white,
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5.0),
+                          color: orange,
+                        ),
+                        child:
+                        MaterialButton(
+                          height: 50,
+                          onPressed: () {
+                            authentifiedUser
+                                ? Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => AddReservation(space: widget.space),
                               ),
-                            ).then((user) async {
-                              await verifyAuthentication();
+                            )
+                                : Navigator.pushNamed(context, loginRoute).then((user) async {
+                              // await verifyAuthentication();
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddReservation(space: widget.space),
+                                ),
+                              ).then((user) async {
+                                // await verifyAuthentication();
+                              }).catchError((error) {
+                                print(error);
+                              });
                             }).catchError((error) {
                               print(error);
                             });
-                          }).catchError((error) {
-                            print(error);
-                          });
-                        },
-                        child: Text(
-                          AppLocalizations.of(context)!.book,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
+                          },
+                          child: Text(
+                            AppLocalizations.of(context)!.book,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.0,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 30),
-                  InkWell(
-                    onTap: () {
-                      launchCaller("tel:${widget.space.phoneNumber}");
-                    },
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.0),
-                        color: Colors.green,
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.phone,
-                          color: Colors.white,
-                          size: 30.0,
+                    const SizedBox(width: 30),
+                    InkWell(
+                      onTap: () {
+                        launchCaller("tel:${widget.space.phoneNumber}");
+                      },
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5.0),
+                          color: Colors.green,
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.phone,
+                            color: Colors.white,
+                            size: 30.0,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          )
-          else
-            Text(""),
         ],
       )
           : Center(

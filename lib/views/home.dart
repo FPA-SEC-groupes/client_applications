@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hello_way_client/models/space.dart';
+import 'package:hello_way_client/view_models/RestrictionsViewModel.dart';
 import 'package:hello_way_client/views/space.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -34,18 +35,49 @@ class _HomeState extends State<Home> {
   final LocationPermissionViewModel _locationPermissionViewModel = LocationPermissionViewModel();
   late HomeViewModel _homeViewModel;
   final SecureStorage secureStorage = SecureStorage();
+  late RestrictionsViewModel _restrictionsViewModel;
   double _distance = 0.0;
   bool _switchValue = false;
   List<String> selectedCategories = [];
   bool _isSearching = false;
   String _searchQuery = '';
+  late int numberOfRestriction = 0;
+  Future<void> verifyAuthentication() async {
+    String? userId = await secureStorage.readData(authentifiedUserId);
+    int? id = int.tryParse(userId!);
+    _restrictionsViewModel.getNumberOfRestrictionsByUserId(id!).then((nb) {
+      setState(() {
+        numberOfRestriction=nb;
+      });
+    }).catchError((error) {
+      // Handle signup error
+    });
+    // String? numberOfRestrictionsString = await secureStorage.readData(numberOfRestrictions);
+    // if (numberOfRestrictionsString != null) {
+    //   int? numberOfRestriction1 = int.tryParse(numberOfRestrictionsString);
+    //   setState(() {
+    //     authentifiedUser = userId != null;
+    //     numberOfRestriction = numberOfRestriction1 ?? 0;
+    //     print("nbbbbbbbbbbbbbbbbbbbb       $numberOfRestriction");
+    //   });
+    // } else {
+    //   setState(() {
+    //     authentifiedUser = userId != null;
+    //     numberOfRestriction = 0; // Default value if the string is null
+    //   });
+    //
+    // }
 
+  }
   @override
   void initState() {
     _homeViewModel = HomeViewModel(context);
+    _restrictionsViewModel = RestrictionsViewModel(context);
     super.initState();
     _fetchSpaces();
     checkLocationPermission();
+    verifyAuthentication();
+
   }
 
   Future<List<Space>> _fetchSpaces() async {
@@ -246,7 +278,7 @@ class _HomeState extends State<Home> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => DetailsSpace(space: space,
+                                          builder: (context) => DetailsSpace(space: space,nb:numberOfRestriction
                                           ),
                                         ),
                                       );

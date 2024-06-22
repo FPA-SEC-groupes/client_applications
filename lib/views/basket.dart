@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hello_way_client/models/ProductStatus.dart';
 import 'package:hello_way_client/response/product_with_quantity.dart';
 import 'package:hello_way_client/utils/const.dart';
 import 'package:provider/provider.dart';
@@ -44,11 +45,13 @@ class _BasketState extends State<Basket> {
     Command? command = await _basketViewModel.fetchCommandByBasketId();
     commandId = command?.idCommand;
     _command = command;
-    if (_command!.status == "PAYED") {
+
+    if (_command?.status == "PAYED") {
       Navigator.pushReplacementNamed(context, bottomNavigationWithFABRoute);
     }
     return command;
   }
+
 
   Future<List<ProductWithQuantities>> _getProductsByBasketId() async {
     List<ProductWithQuantities> products = await _basketViewModel.getProductsByBasketId();
@@ -59,11 +62,18 @@ class _BasketState extends State<Basket> {
     List<ProductWithQuantities> products = await _basketViewModel.getProductsByBasketId();
     double totalSum = 0;
     for (var product in products) {
-      double productPrice = product.product.price;
-      int productQuantity = product.quantity;
-      double productSum = productPrice * productQuantity;
-      totalSum += productSum;
+      var productDetails = product.product;
+      if (productDetails != null) {
+        bool hasActivePromotion = productDetails.hasActivePromotion ?? false;
+        double productPrice = hasActivePromotion
+            ? productDetails.price * (100 - (productDetails.percentage ?? 0)) / 100
+            : productDetails.price;
+        int productQuantity = product.quantity-product.oldQuantity;
+        double productSum = productPrice * productQuantity;
+        totalSum += productSum;
+      }
     }
+
     setState(() {
       _totalSum = totalSum;
     });
@@ -243,7 +253,8 @@ class _BasketState extends State<Basket> {
                       itemCount: products.length,
                       itemBuilder: (context, index) {
                         ProductWithQuantities product = products[index];
-                        return BasketItem(
+                        return
+                          BasketItem(
                           productWithQuantity: product,
                           onDelete: () {
                             _basketViewModel.deleteProductFromBasket(product.product.id!).then((_) {
@@ -287,7 +298,9 @@ class _BasketState extends State<Basket> {
                   }
                 }),
           ),
-          if (firstSession == "First session" && _totalSum != 0.0)
+          if (
+          // firstSession == "First session" &&
+              _totalSum != 0.0)
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -324,6 +337,24 @@ class _BasketState extends State<Basket> {
                         }).catchError((error) {
                           print(error);
                         });
+                      }
+                      else{
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.orderModifiedSuccess),
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 3),
+                          backgroundColor: Colors.green,
+                          margin: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).size.height -
+                                kToolbarHeight -
+                                44 -
+                                MediaQuery.of(context).padding.top,
+                          ),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero,
+                          ),
+                        );
+                        Navigator.pushReplacementNamed(context, listCommandsRoute);
                       }
 
                     },

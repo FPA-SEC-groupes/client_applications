@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hello_way_client/models/command.dart';
 import 'package:hello_way_client/models/user.dart';
 import 'package:hello_way_client/response/product_with_quantity.dart';
@@ -81,6 +80,7 @@ class BasketViewModel {
   Future<List<ProductWithQuantities>> getProductsByBasketId() async {
     try {
       final basketId = await secureStorage.readData(basketIdKey);
+
       final response =
       await dioInterceptor.dio.get('$baseUrl/api/baskets/products/by_basket/$basketId');
 
@@ -88,6 +88,7 @@ class BasketViewModel {
         final List<dynamic> parsedJson = response.data;
         final List<ProductWithQuantities> products =
         parsedJson.map((json) => ProductWithQuantities.fromJson(json)).toList();
+        print(products.toString());
         return products;
       } else {
         throw Exception('Failed to load products: ${response.statusCode}');

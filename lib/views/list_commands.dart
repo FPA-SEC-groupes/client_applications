@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hello_way_client/models/command.dart';
 import 'package:hello_way_client/res/app_colors.dart';
 import 'package:hello_way_client/shimmer/item_command_shimmer.dart';
+import 'package:hello_way_client/utils/const.dart';
+import 'package:hello_way_client/utils/routes.dart';
+import 'package:hello_way_client/utils/secure_storage.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/item_command.dart';
 import '../services/network_service.dart';
@@ -20,10 +23,16 @@ class ListCommands extends StatefulWidget {
 class _ListCommandsState extends State<ListCommands> {
   late CommandsViewModel _listCommandsViewModel;
   int selectedStatusIndex = 0;
-
+  final SecureStorage secureStorage = SecureStorage();
   Future<List<Command>?> getCommandsByUserId() async {
-    List<Command>? commands = await _listCommandsViewModel.getCommandsByUserId();
-    return commands;
+    final userId = await secureStorage.readData(authentifiedUserId);
+    if(userId!=null){
+      List<Command>? commands = await _listCommandsViewModel.getCommandsByUserId();
+      return commands;
+    } else{
+      Navigator.pushNamed(context, bottomNavigationWithFABRoute);
+    }
+
   }
 
   Future<double> getSumOfCommand(int commandId) async {
@@ -42,8 +51,13 @@ class _ListCommandsState extends State<ListCommands> {
   Widget build(BuildContext context) {
     NetworkStatus networkStatus = Provider.of<NetworkStatus>(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
-
-    return Scaffold(
+    final index = ModalRoute.of(context)!.settings.arguments as int?;
+    return WillPopScope(
+        onWillPop: () async {
+          Navigator.pushReplacementNamed(context, bottomNavigationWithFABRoute, arguments: index);
+      return true;
+    },
+    child: Scaffold(
       backgroundColor: themeProvider.isDarkMode ? Colors.grey[900] : lightGray,
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -156,6 +170,7 @@ class _ListCommandsState extends State<ListCommands> {
           ),
         ),
       ),
+    )
     );
   }
 }

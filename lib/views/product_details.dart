@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hello_way_client/models/product.dart';
 import 'package:hello_way_client/utils/const.dart';
+import 'package:hello_way_client/utils/routes.dart';
 import 'package:provider/provider.dart';
 import '../../res/app_colors.dart';
 import '../res/strings.dart';
@@ -49,6 +50,7 @@ class _ProductDetailsState extends State<ProductDetails> {
     NetworkStatus networkStatus = Provider.of<NetworkStatus>(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     final product = ModalRoute.of(context)!.settings.arguments as Product;
+    print(product.toString());
     return ScaffoldMessenger(
       key: _detailsProductScaffoldKey,
       child: Scaffold(
@@ -283,6 +285,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 .then((_) {
                               var snackBar = customSnackBar(context, AppLocalizations.of(context)!.cartUpdatedSuccess, Colors.green);
                               _detailsProductScaffoldKey.currentState?.showSnackBar(snackBar);
+                              Navigator.pushNamed(context,  menuRoute);
                             }).catchError((error) {
                               print(error);
                             });

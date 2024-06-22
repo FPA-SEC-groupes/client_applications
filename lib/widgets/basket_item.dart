@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hello_way_client/models/ProductStatus.dart';
 import 'package:hello_way_client/utils/const.dart';
 import '../res/app_colors.dart';
 import '../response/product_with_quantity.dart';
@@ -12,7 +13,13 @@ class BasketItem extends StatefulWidget {
   final void Function()? onDecrement;
   final void Function()? onDelete;
 
-  const BasketItem({Key? key, required this.productWithQuantity, this.onDelete, this.onIncrement, this.onDecrement}) : super(key: key);
+  const BasketItem({
+    Key? key,
+    required this.productWithQuantity,
+    this.onDelete,
+    this.onIncrement,
+    this.onDecrement,
+  }) : super(key: key);
 
   @override
   _BasketItemState createState() => _BasketItemState();
@@ -49,9 +56,9 @@ class _BasketItemState extends State<BasketItem> {
                       Icons.image_outlined,
                       color: Colors.grey.withOpacity(0.5),
                     )
-                        : Image.network(baseUrl+productUrl+widget.productWithQuantity.product.images![widget.productWithQuantity.product.images!.length - 1].fileName)
-                    // Image.memory(
-                    //     base64.decode(widget.productWithQuantity.product.images![widget.productWithQuantity.product.images!.length - 1].data)),
+                        : Image.network(
+                      baseUrl + productUrl + widget.productWithQuantity.product.images!.last.fileName,
+                    ),
                   ),
                 ),
               ),
@@ -71,7 +78,7 @@ class _BasketItemState extends State<BasketItem> {
                         ),
                       ),
                       Text(
-                        "${widget.productWithQuantity.product.price} DT",
+                        "${(widget.productWithQuantity.product.price * (100 - (widget.productWithQuantity.product.percentage ?? 0))) / 100} DT",
                         style: TextStyle(color: themeProvider.isDarkMode ? Colors.white : Colors.black),
                       ),
                       const SizedBox(height: 20),
@@ -80,30 +87,34 @@ class _BasketItemState extends State<BasketItem> {
                         children: [
                           Row(
                             children: [
-                              InkWell(
-                                onTap: widget.onDecrement,
-                                child: Container(
-                                  width: 25,
-                                  height: 25,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                    border: Border.all(
-                                      color: widget.productWithQuantity.quantity > 1
-                                          ? Colors.orange
-                                          : Colors.grey, // Replace with your desired border color
-                                      width: 1.0, // Replace with your desired border width
+                                InkWell(
+                                  onTap:widget.productWithQuantity.quantity > widget.productWithQuantity.oldQuantity
+                                      ? widget.onDecrement
+                                      : null,
+                                  child: Container(
+                                    width: 25,
+                                    height: 25,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      border: Border.all(
+                                        color: widget.productWithQuantity.quantity > 1
+                                            ? Colors.orange
+                                            : Colors.grey,
+                                        width: 1.0,
+                                      ),
+                                      color: Colors.white,
                                     ),
-                                    color: Colors.white,
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.remove,
-                                      color: widget.productWithQuantity.quantity > 1 ? Colors.orange : Colors.grey,
-                                      size: 20.0,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.remove,
+                                        color: widget.productWithQuantity.quantity > 1
+                                            ? Colors.orange
+                                            : Colors.grey,
+                                        size: 20.0,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 5),
                                 child: Text(
@@ -119,8 +130,8 @@ class _BasketItemState extends State<BasketItem> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5.0),
                                     border: Border.all(
-                                      color: Colors.orange, // Replace with your desired border color
-                                      width: 1.0, // Replace with your desired border width
+                                      color: Colors.orange,
+                                      width: 1.0,
                                     ),
                                   ),
                                   child: const Center(
@@ -134,13 +145,13 @@ class _BasketItemState extends State<BasketItem> {
                               ),
                             ],
                           ),
+                          if (widget.productWithQuantity.status == ProductStatus.NEW)
                           InkWell(
                             onTap: widget.onDelete,
                             child: Row(
-                              // Adjust to control the width behavior
                               children: const [
                                 Icon(
-                                  Icons.delete, // Use the cart icon
+                                  Icons.delete,
                                   color: gray,
                                   size: 25,
                                 ),
@@ -155,6 +166,8 @@ class _BasketItemState extends State<BasketItem> {
                               ],
                             ),
                           ),
+                          // else if (widget.productWithQuantity.status == ProductStatus.CONFIRMED)
+                          // Text(''),
                         ],
                       ),
                     ],

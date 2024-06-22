@@ -257,7 +257,23 @@ class _MenuState extends State<Menu> {
                                     child: MenuCard(
                                       product: product,
                                       onTap: () {
-                                        _basketViewModel.addProductToBasket(product.id!, 1).then((_) {}).catchError((error) {
+                                        _basketViewModel.addProductToBasket(product.id!, 1).then((_) {
+                                          SnackBar(
+                                            content: Text(AppLocalizations.of(context)!.cartUpdatedSuccess),
+                                            behavior: SnackBarBehavior.floating,
+                                            duration: const Duration(seconds: 3),
+                                            backgroundColor: Colors.green,
+                                            margin: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context).size.height -
+                                                  kToolbarHeight -
+                                                  44 -
+                                                  MediaQuery.of(context).padding.top,
+                                            ),
+                                            shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.zero,
+                                            ),
+                                          );
+                                        }).catchError((error) {
                                           print(error);
                                         });
                                       },
