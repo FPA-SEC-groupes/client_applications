@@ -1,3 +1,4 @@
+import 'package:draggable_fab/draggable_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hello_way_client/response/product_with_quantity.dart';
@@ -68,7 +69,7 @@ class _UpdateCommandeState extends State<UpdateCommande> {
       totalSum += productSum;
     }
     setState(() {
-      _totalSum = totalSum;
+      _totalSum = totalSum-widget.sum;
     });
     return totalSum;
   }
@@ -199,6 +200,20 @@ class _UpdateCommandeState extends State<UpdateCommande> {
               : const SizedBox()
         ],
       ),
+      floatingActionButton:Padding(padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 50),
+          child: DraggableFab(
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, menuRoute);
+              },
+              backgroundColor: orange,
+              child: const Icon(
+                Icons.restaurant_menu,
+                color: Colors.white,
+              ),
+              ),
+        )
+      ),
       body: networkStatus == NetworkStatus.Online
           ? Column(
         children: [
@@ -259,7 +274,7 @@ class _UpdateCommandeState extends State<UpdateCommande> {
                             });
                           },
                           onIncrement: () {
-                            _basketViewModel.addProductToBasket(product.product.id!, 1).then((_) {
+                            _basketViewModel.addProductToBasket(product.product.id!, 1,context).then((_) {
                               setState(() {
                                 _getTotalSumByBasketId();
                               });
@@ -269,7 +284,7 @@ class _UpdateCommandeState extends State<UpdateCommande> {
                           },
                           onDecrement: () {
                             if (product.quantity > 1) {
-                              _basketViewModel.addProductToBasket(product.product.id!, -1).then((_) {
+                              _basketViewModel.addProductToBasket(product.product.id!, -1,context).then((_) {
                                 setState(() {
                                   _getTotalSumByBasketId();
                                 });

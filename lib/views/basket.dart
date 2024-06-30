@@ -267,7 +267,7 @@ class _BasketState extends State<Basket> {
                             });
                           },
                           onIncrement: () {
-                            _basketViewModel.addProductToBasket(product.product.id!, 1).then((_) {
+                            _basketViewModel.addProductToBasket(product.product.id!, 1,context).then((_) {
                               setState(() {
                                 _getTotalSumByBasketId();
                               });
@@ -277,7 +277,7 @@ class _BasketState extends State<Basket> {
                           },
                           onDecrement: () {
                             if (product.quantity > 1) {
-                              _basketViewModel.addProductToBasket(product.product.id!, -1).then((_) {
+                              _basketViewModel.addProductToBasket(product.product.id!, -1,context).then((_) {
                                 setState(() {
                                   _getTotalSumByBasketId();
                                 });

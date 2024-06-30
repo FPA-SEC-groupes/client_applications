@@ -281,7 +281,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                         child: IconButton(
                           onPressed: () {
                             _basketViewModel
-                                .addProductToBasket(product.id!, quantity)
+                                .addProductToBasket(product.id!, quantity,context)
                                 .then((_) {
                               var snackBar = customSnackBar(context, AppLocalizations.of(context)!.cartUpdatedSuccess, Colors.green);
                               _detailsProductScaffoldKey.currentState?.showSnackBar(snackBar);

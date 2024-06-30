@@ -33,6 +33,8 @@ class _MyAccountState extends State<MyAccount> {
 
   Future<User?> getUserById() async {
     String? userId = await secureStorage.readData(authentifiedUserId);
+    print("idddddddddddddddddddddddddddddddd"+userId.toString());
+
     if (userId != null) {
       User user = await _myAccountViewModel.fetchUserById();
       return user;

@@ -6,6 +6,7 @@ import 'package:hello_way_client/models/notifcation.dart' as notification;
 import '../interceptors/dio_interceptor.dart';
 import '../utils/const.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../utils/secure_storage.dart';
 
@@ -43,7 +44,7 @@ class BasketViewModel {
 
   }
 
-  Future<void> addProductToBasket(int productId, int quantity) async {
+  Future<void> addProductToBasket(int productId, int quantity ,BuildContext context ) async {
 
     final basketId = await secureStorage.readData(basketIdKey);
     final url =
@@ -53,7 +54,37 @@ class BasketViewModel {
       final response = await dioInterceptor.dio.post(url);
 
       if (response.statusCode == 200) {
-
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.cartUpdatedSuccess),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.green,
+            margin: EdgeInsets.only(
+              // top: kToolbarHeight , // 16 is the space you want below the AppBar
+              right: 16,
+              left: 16,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+        );
+        // SnackBar(
+        //   content: Text(AppLocalizations.of(context)!.cartUpdatedSuccess),
+        //   behavior: SnackBarBehavior.floating,
+        //   duration: const Duration(seconds: 3),
+        //   backgroundColor: Colors.green,
+        //   margin: EdgeInsets.only(
+        //     bottom: MediaQuery.of(context).size.height -
+        //         kToolbarHeight -
+        //         44 -
+        //         MediaQuery.of(context).padding.top,
+        //   ),
+        //   shape: const RoundedRectangleBorder(
+        //     borderRadius: BorderRadius.zero,
+        //   ),
+        // );
 
       } else {
         print('Failed to add product to basket. Error: ${response.statusCode}');

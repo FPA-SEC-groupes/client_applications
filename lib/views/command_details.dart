@@ -41,6 +41,7 @@ class _CommandDetailsState extends State<CommandDetails> {
 
   @override
   Widget build(BuildContext context) {
+
     NetworkStatus networkStatus = Provider.of<NetworkStatus>(context);
     return ScaffoldMessenger(
         key: _detailsCommandScaffoldKey,
@@ -153,8 +154,7 @@ class _CommandDetailsState extends State<CommandDetails> {
                 }),
           ),
 
-          if(widget.command.status=="NOT_YET")
-
+          if (widget.command.status != "PAYED" && widget.command.status != "REFUSED")
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(

@@ -203,7 +203,7 @@ class _BottomNavigationBarWithFABState
                   icon: Icon(Icons.perm_identity_sharp,color:_currentIndex == 3 ?orange : Colors.grey),
                   onPressed: () async {
                     String? userId = await secureStorage.readData(authentifiedUserId);
-                    print(userId);
+                    print("idddddddddddddddddddddddddddddddd"+userId.toString());
                     if (userId != null) {
                       _onItemTapped(3);
                       setState(() {
