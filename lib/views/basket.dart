@@ -339,6 +339,32 @@ class _BasketState extends State<Basket> {
                         });
                       }
                       else{
+                        _basketViewModel.addNewCommand().then((command) async {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(AppLocalizations.of(context)!.orderAddedSuccess),
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 3),
+                              backgroundColor: Colors.green,
+                              margin: EdgeInsets.only(
+                                bottom: MediaQuery.of(context).size.height -
+                                    kToolbarHeight -
+                                    44 -
+                                    MediaQuery.of(context).padding.top,
+                              ),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero,
+                              ),
+                            ),
+                          );
+
+                          setState(() {
+                            commandId = command.idCommand;
+                          });
+                          Navigator.pushReplacementNamed(context, listCommandsRoute);
+                        }).catchError((error) {
+                          print(error);
+                        });
                         SnackBar(
                           content: Text(AppLocalizations.of(context)!.orderModifiedSuccess),
                           behavior: SnackBarBehavior.floating,
@@ -359,7 +385,9 @@ class _BasketState extends State<Basket> {
 
                     },
                     child: Text(
-                      AppLocalizations.of(context)!.confirmOrderMessage.replaceAll('%totalSum', _totalSum.toString()),
+                     commandId==null ?
+                     AppLocalizations.of(context)!.confirmOrderMessage.replaceAll('%totalSum', _totalSum.toString())
+                      :AppLocalizations.of(context)!.modifyOrderMessage.replaceAll('%totalSum', _totalSum.toString()),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,

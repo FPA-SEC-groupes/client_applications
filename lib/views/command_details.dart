@@ -95,11 +95,14 @@ class _CommandDetailsState extends State<CommandDetails> {
                             ? AppLocalizations.of(context)!.pendingStatus
                             : widget.command.status ==
                                     "REFUSED"
-                                ? AppLocalizations.of(context)!.refusedStatus
-                                : widget.command.status ==
+                            ? AppLocalizations.of(context)!.refusedStatus
+                            : widget.command.status ==
                                         "CONFIRMED"
-                                    ? AppLocalizations.of(context)!.confirmedStatus
-                                    : AppLocalizations.of(context)!.paidStatus,
+                            ? AppLocalizations.of(context)!.confirmedStatus
+                            : widget.command.status ==
+                              "UPDATED"
+                            ? AppLocalizations.of(context)!.updatedStatus
+                            :AppLocalizations.of(context)!.paidStatus,
                         style: const TextStyle(color: Colors.white),
                       ),
                     )

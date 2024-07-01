@@ -33,6 +33,7 @@
   "pendingStatus": "Pending",
   "refusedStatus": "Refused",
   "confirmedStatus": "Confirmed",
+  "updatedStatus": "updated",
   "canceledStatus": "Canceled",
   "paidStatus": "Paid",
   "order": "Order",

@@ -1,6 +1,7 @@
 import 'package:draggable_fab/draggable_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hello_way_client/models/ProductStatus.dart';
 import 'package:hello_way_client/response/product_with_quantity.dart';
 import 'package:hello_way_client/utils/const.dart';
 import 'package:provider/provider.dart';
@@ -63,11 +64,21 @@ class _UpdateCommandeState extends State<UpdateCommande> {
     List<ProductWithQuantities> products = await _basketViewModel.getProductsByBasketId();
     double totalSum = 0;
     for (var product in products) {
-      double productPrice = product.product.price;
-      int productQuantity = product.quantity;
-      double productSum = productPrice * productQuantity;
-      totalSum += productSum;
+      if (product.oldQuantity < product.quantity) {
+        if (product.product.hasActivePromotion!) {
+          double productPrice = (product.product.price * (100 - product.product.percentage!)) / 100;
+          int productQuantity =  product.quantity-product.oldQuantity;
+          double productSum = productPrice * productQuantity;
+          totalSum += productSum;
+        } else {
+          double productPrice = product.product.price;
+          int productQuantity =  product.quantity-product.oldQuantity;
+          double productSum = productPrice * productQuantity;
+          totalSum += productSum;
+        }
+      }
     }
+
     setState(() {
       _totalSum = totalSum-widget.sum;
     });
@@ -204,7 +215,7 @@ class _UpdateCommandeState extends State<UpdateCommande> {
           child: DraggableFab(
             child: FloatingActionButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, menuRoute);
+                Navigator.pushNamed(context, menuRoute);
               },
               backgroundColor: orange,
               child: const Icon(

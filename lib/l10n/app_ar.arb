@@ -33,6 +33,7 @@
   "pendingStatus": "قيد الانتظار",
   "refusedStatus": "مرفوضة",
   "confirmedStatus": "مؤكدة",
+  "updatedStatus": "محدث",
   "canceledStatus": "ملغاة",
   "paidStatus": "مدفوعة",
   "order": "طلب",

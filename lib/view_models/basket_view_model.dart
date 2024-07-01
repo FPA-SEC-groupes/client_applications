@@ -135,7 +135,7 @@ class BasketViewModel {
       final basketId = await secureStorage.readData(basketIdKey);
       final userId = await secureStorage.readData(userIdKey);
       String url = "$baseUrl/api/baskets/$basketId/commands/add/user/$userId";
-
+      print(url);
       Response response = await dioInterceptor.dio.post(url);
 
       if (response.statusCode == 200) {

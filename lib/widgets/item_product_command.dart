@@ -65,7 +65,9 @@ class ItemProductCommand extends StatelessWidget {
 
                       SizedBox(height: 10,),
                       Text(
-                          "${productWithQuantities.product.price} DT",
+                         productWithQuantities.product.hasActivePromotion!?
+                         "${(productWithQuantities.product.price * (100 - (productWithQuantities.product.percentage ?? 0))) / 100}DT"
+                             : "${productWithQuantities.product.price} DT",
 
                       ),
                       SizedBox(height: 10,),
