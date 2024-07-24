@@ -87,7 +87,47 @@ class _BasketState extends State<Basket> {
       firstSession = session;
     });
   }
-
+  Future<void> _showDeleteConfirmationDialog(ProductWithQuantities product) async {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(AppLocalizations.of(context)!.deleteConfirmation),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(AppLocalizations.of(context)!.deleteTitle),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(AppLocalizations.of(context)!.cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(AppLocalizations.of(context)!.delete),
+              onPressed: () {
+                _basketViewModel.deleteProductFromBasket(product.product.id!).then((_) {
+                  setState(() {
+                    _getTotalSumByBasketId();
+                    _getProductsByBasketId();
+                  });
+                  Navigator.of(context).pop();
+                }).catchError((error) {
+                  print(error);
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     NetworkStatus networkStatus = Provider.of<NetworkStatus>(context);
@@ -257,14 +297,15 @@ class _BasketState extends State<Basket> {
                           BasketItem(
                           productWithQuantity: product,
                           onDelete: () {
-                            _basketViewModel.deleteProductFromBasket(product.product.id!).then((_) {
-                              setState(() {
-                                _getTotalSumByBasketId();
-                                _getProductsByBasketId();
-                              });
-                            }).catchError((error) {
-                              print(error);
-                            });
+                            _showDeleteConfirmationDialog(product);
+                            // _basketViewModel.deleteProductFromBasket(product.product.id!).then((_) {
+                            //   setState(() {
+                            //     _getTotalSumByBasketId();
+                            //     _getProductsByBasketId();
+                            //   });
+                            // }).catchError((error) {
+                            //   print(error);
+                            // });
                           },
                           onIncrement: () {
                             _basketViewModel.addProductToBasket(product.product.id!, 1,context).then((_) {
@@ -299,7 +340,7 @@ class _BasketState extends State<Basket> {
                 }),
           ),
           if (
-          // firstSession == "First session" &&
+          firstSession == "First session" &&
               _totalSum != 0.0)
             Align(
               alignment: Alignment.bottomCenter,

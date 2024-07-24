@@ -41,8 +41,8 @@ class _CommandDetailsState extends State<CommandDetails> {
 
   @override
   Widget build(BuildContext context) {
-
     NetworkStatus networkStatus = Provider.of<NetworkStatus>(context);
+    double sum = double.parse(widget.sum.toStringAsFixed(2));
     return ScaffoldMessenger(
         key: _detailsCommandScaffoldKey,
         child: Scaffold(
@@ -75,7 +75,7 @@ class _CommandDetailsState extends State<CommandDetails> {
                   children: [
                     if(widget.command.status=="CONFIRMED"|| widget.command.status == "PAYED")
                     Text(
-                      "${AppLocalizations.of(context)!.total}: ${widget.sum}",
+                      "${AppLocalizations.of(context)!.total}: ${sum}",
                       style: const TextStyle(fontSize: 16),
                     ),
                     Container(
@@ -178,7 +178,9 @@ class _CommandDetailsState extends State<CommandDetails> {
                     );
                   },
                   child: Text(
-                    AppLocalizations.of(context)!.modifyOrderMessage.replaceAll('%totalSum', widget.command.sum.toString()),
+                    widget.command.sum>0 ?
+                    AppLocalizations.of(context)!.modifyOrderMessage.replaceAll('%totalSum', widget.command.sum.toString()):
+                    AppLocalizations.of(context)!.modifyOrder,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16.0,

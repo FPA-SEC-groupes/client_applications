@@ -26,7 +26,19 @@ class _MenuCardState extends State<MenuCard> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
+    double? sum;
+    String? formattedPrice;
+    if(widget.product.hasActivePromotion ?? false)
+    {
+      sum = (widget.product.price * (100 - (widget.product.percentage ?? 0))) / 100;
+      sum = double.parse(sum.toStringAsFixed(2));
+      String formattedPrice = "$sum ${AppLocalizations.of(context)!.tunisianDinar}";
+    }
+    else{
+      sum = widget.product.price;
+      sum= sum = double.parse(sum.toStringAsFixed(2));
+      String formattedPrice = "$sum ${AppLocalizations.of(context)!.tunisianDinar}";
+    }
     return Container(
       color: themeProvider.isDarkMode ? Colors.grey[850] : Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -130,7 +142,8 @@ class _MenuCardState extends State<MenuCard> {
                           Row(
                             children: [
                               Text(
-                                "${(widget.product.price * (100 - widget.product.percentage!)) / 100} DT",
+                                  formattedPrice!,
+                                // "${(widget.product.price * (100 - widget.product.percentage!)) / 100} DT",
                                 style: TextStyle(
                                   color: themeProvider.isDarkMode ? Colors.white : Colors.black,
                                 ),
@@ -145,7 +158,8 @@ class _MenuCardState extends State<MenuCard> {
                                 alignment: Alignment.center,
                                 children: [
                                   Text(
-                                    "${widget.product.price} DT",
+                                      formattedPrice!,
+                                    // "${widget.product.price} DT",
                                     style: TextStyle(color: gray),
                                     textAlign: TextAlign.center,
                                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_way_client/models/command.dart';
+import 'package:hello_way_client/navigations/bottom_navigation_bar_with_fab.dart';
 import 'package:hello_way_client/res/app_colors.dart';
 import 'package:hello_way_client/shimmer/item_command_shimmer.dart';
 import 'package:hello_way_client/utils/const.dart';
@@ -22,7 +23,7 @@ class ListCommands extends StatefulWidget {
 
 class _ListCommandsState extends State<ListCommands> {
   late CommandsViewModel _listCommandsViewModel;
-  int selectedStatusIndex = 0;
+  int selectedStatusIndex = 3;
   final SecureStorage secureStorage = SecureStorage();
   Future<List<Command>?> getCommandsByUserId() async {
     final userId = await secureStorage.readData(authentifiedUserId);
@@ -54,13 +55,35 @@ class _ListCommandsState extends State<ListCommands> {
     final index = ModalRoute.of(context)!.settings.arguments as int?;
     return WillPopScope(
         onWillPop: () async {
-          Navigator.pushReplacementNamed(context, bottomNavigationWithFABRoute, arguments: index);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BottomNavigationBarWithFAB(
+                index: selectedStatusIndex,
+              ),
+            ),
+          );
+          // Navigator.pushReplacementNamed(context, bottomNavigationWithFABRoute, arguments: index);
       return true;
     },
     child: Scaffold(
       backgroundColor: themeProvider.isDarkMode ? Colors.grey[900] : lightGray,
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BottomNavigationBarWithFAB(
+                  index: selectedStatusIndex,
+                ),
+              ),
+            );
+            // Navigator.pushReplacementNamed(context, bottomNavigationWithFABRoute, arguments: index);
+          },
+        ),
         title: Text(AppLocalizations.of(context)!.myOrders),
         backgroundColor: orange,
       ),
@@ -81,7 +104,28 @@ class _ListCommandsState extends State<ListCommands> {
               child: Text(AppLocalizations.of(context)!.errorRetrievingData),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center();
+            return  Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.group_off_rounded,
+                      size: 150,
+                      color: gray,
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      AppLocalizations.of(context)!.noCommande,
+                      style: const TextStyle(fontSize: 22, color: gray),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            );
           } else {
             final commands = snapshot.data!;
             return ListView.separated(

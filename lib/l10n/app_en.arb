@@ -91,6 +91,7 @@
   "orderModifiedSuccess": "Order modified successfully",
   "confirmOrderMessage": "Confirm Order (Total: %totalSum DT)",
   "modifyOrderMessage": "Modify Order (Total: %totalSum DT)",
+  "modifyOrder": "Modify Order",
     "confirm": "Confirm",
     "send": "Send",
     "addToCart": "Add to Cart",
@@ -116,20 +117,20 @@
   "locationAccessRequired": "Location access is required to use this feature.",
   "createAccount": "Create an account",
   "noRating": "No rating",
-
-
-
-
-
-
-
+  "noCommande": "There are no Order",
   "noNotifications": "No notifications",
   "noBooking":"You haven't made any bookings at the moment.",
   "passwordResetEmail":"Please provide your email address, and we will send you a new password",
   "emailNotAssociated": "The email address provided is not associated with any user account",
-
   "tableNotActive": "Table Not Active",
-  "tableNotActiveMessage": "Table is not active."
-    }
+  "tableNotActiveMessage": "Table is not active.",
+  "deleteConfirmation": "Delete Confirmation",
+  "deleteTitle": "Are you sure you want to delete this product?",
+  "delete": "Delete",
+  "ntCommandeTitle": "Command Notification",
+  "ntCommandeUpdate": "Your command has been updated by manager successfully",
+  "ntComandeNew": "Your command has been placed successfully",
+  "ntCommandeConfermed": "Hello your command have been confirmed you are welcome if you like you can add new products"
+}
 
 

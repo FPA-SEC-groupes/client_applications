@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,18 +11,23 @@ import '../utils/const.dart';
 import '../utils/secure_storage.dart';
 
 class LoginViewModel{
-
+  String token ="";
+  final _firebaseMessaging= FirebaseMessaging.instance;
   final Dio dio = Dio();
   final url = '$baseUrl/api/auth/signin';
   final SecureStorage secureStorage = SecureStorage();
 
   Future<User> login(BuildContext context, String username,String password) async {
     try {
+      String token = await _firebaseMessaging.getToken() ?? '';
+
+      // Now update the state synchronously within setState
       Response response = await dio.post(
         url,
         data: jsonEncode({
           'username': username,
           'password': password,
+          'token':token
         }),
       );
 

@@ -65,7 +65,8 @@ dependencies:
   firebase_core: ^3.1.1
   cloud_firestore: ^5.0.2
   firebase_messaging: ^15.0.2
-
+  translator: ^1.0.0
+  html_unescape: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

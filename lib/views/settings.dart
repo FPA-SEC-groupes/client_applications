@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hello_way_client/utils/routes.dart';
 import 'package:hello_way_client/utils/secure_storage.dart';
+import 'package:hello_way_client/view_models/my_account_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/l10n.dart';
@@ -24,11 +25,13 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   final SecureStorage secureStorage = SecureStorage();
+  late MyAccountViewModel _myAccountViewModel;
   String? _userId;
 
   @override
   void initState() {
     authentifiedUser();
+    _myAccountViewModel = MyAccountViewModel(context);
     super.initState();
   }
 
@@ -144,7 +147,11 @@ class _SettingsState extends State<Settings> {
                                             groupValue: isSelected ? L10n.all[index] : null,
                                             onChanged: (value) {
                                               languageProvider.changeLocale(value!);
-                                              Navigator.pop(context);
+                                              _userId != null ?_myAccountViewModel.updateLang(value!.toString()).then((_) {
+                                                Navigator.pop(context);
+                                              }).catchError((error) {
+                                              }):Navigator.pop(context);
+
                                             },
                                           );
                                         }).toList(),

@@ -32,7 +32,7 @@ class _ItemCommandState extends State<ItemCommand> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
+    double sum = double.parse(widget.sum.toStringAsFixed(2));
     return Container(
       padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
       color: themeProvider.isDarkMode ? Colors.grey[800] : Colors.white,
@@ -68,9 +68,9 @@ class _ItemCommandState extends State<ItemCommand> {
             ],
           ),
           SizedBox(height: 10),
-          if (widget.command.status == "CONFIRMED" || widget.command.status == "PAYED")
+          // if (widget.command.status == "CONFIRMED" || widget.command.status == "PAYED")
             Text(
-              "Total: ${widget.sum} DT",
+              "Total: ${sum} DT",
               style: TextStyle(
                 fontSize: 16,
                 color: themeProvider.isDarkMode ? Colors.white70 : Colors.black,

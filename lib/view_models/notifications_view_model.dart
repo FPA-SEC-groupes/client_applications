@@ -4,9 +4,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../interceptors/dio_interceptor.dart';
-import '../models/notifcation.dart'as notification;
+import '../models/notifcation.dart'as notif;
 import '../utils/const.dart';
 import '../utils/secure_storage.dart';
+import '../utils/const.dart';
+import 'package:html_unescape/html_unescape.dart';
+import 'package:http/http.dart' as http;
+import 'package:translator/translator.dart';
+import 'dart:convert';
 
 class NotificationViewModel{
 
@@ -14,11 +19,26 @@ class NotificationViewModel{
   NotificationViewModel(BuildContext context)
       : dioInterceptor = DioInterceptor(context);
   final SecureStorage secureStorage = SecureStorage();
+  static Future<String> translate(String message, String toLanguageCode) async {
+    final response = await http.post(
+      Uri.parse('https://translation.googleapis.com/language/translate/v2?target=$toLanguageCode&key=$apiKey&q=$message') ,
+    );
 
-  Future<List<notification.Notification>> fetchNewNotificationsForUser(String userId) async {
+    if (response.statusCode == 200) {
+      final body = json.decode(response.body);
+      final translations = body['data']['translations'] as List;
+      final translation = translations.first;
+
+      return HtmlUnescape().convert(translation['translatedText']);
+    } else {
+      throw Exception();
+    }
+  }
+  Future<List<notif.Notification>> fetchNewNotificationsForUser(String userId) async {
     final Dio dio = Dio();
     final String url = '$baseUrl/api/notifications/providers/$userId/notifications';
     final jwtCookie = await secureStorage.readData('jwtToken');
+    String? savedLanguageCode = await secureStorage.readData('selectedLanguage');
     final options = Options(headers: {'Cookie': jwtCookie});
 
     try {
@@ -26,10 +46,16 @@ class NotificationViewModel{
 
       if (response.statusCode == 200) {
         final List<dynamic> parsedJson = response.data;
-        final List<notification.Notification> notifications =
-        parsedJson.map((json) => notification.Notification.fromJson(json)).where((notification) => notification.seen == false)
-            .toList();
-        return notifications;
+        final List<notif.Notification> notifications = await Future.wait(
+          parsedJson.map((json) async {
+            final notification = notif.Notification.fromJson(json);
+            notification.title = await translate(notification.title, savedLanguageCode ?? 'en');
+            notification.message = await translate(notification.message, savedLanguageCode ?? 'en');
+            return notification;
+          }).toList(),
+        );
+
+        return notifications.where((notification) => !notification.seen).toList();
       } else {
         // Handle error cases here, such as invalid response status codes.
         throw Exception('Failed to load notifications');
@@ -53,20 +79,27 @@ class NotificationViewModel{
   }
 
 
-  Future<List<notification.Notification>> fetchNotificationsForUser(String userId) async {
+  Future<List<notif.Notification>> fetchNotificationsForUser(String userId) async {
 
     final String url = '$baseUrl/api/notifications/providers/$userId/notifications';
 
 
+    String? savedLanguageCode = await secureStorage.readData('selectedLanguage');
 
-      final response = await dioInterceptor.dio.get(url);
+    final response = await dioInterceptor.dio.get(url);
 
       if (response.statusCode == 200) {
         final List<dynamic> parsedJson = response.data;
-        final List<notification.Notification> notifications =
-        parsedJson.map((json) => notification.Notification.fromJson(json))
-            .toList();
-        return notifications;
+        final List<notif.Notification> notifications = await Future.wait(
+          parsedJson.map((json) async {
+            final notification = notif.Notification.fromJson(json);
+            notification.title = await translate(notification.title, savedLanguageCode ?? 'en');
+            notification.message = await translate(notification.message, savedLanguageCode ?? 'en');
+            return notification;
+          }).toList(),
+        );
+
+        return notifications.where((notification) => !notification.seen).toList();
       } else {
         // Handle error cases here, such as invalid response status codes.
         throw Exception('Failed to load notifications');

@@ -50,6 +50,19 @@ class _ProductDetailsState extends State<ProductDetails> {
     NetworkStatus networkStatus = Provider.of<NetworkStatus>(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     final product = ModalRoute.of(context)!.settings.arguments as Product;
+    double? sum;
+    String? formattedPrice;
+    if(product.hasActivePromotion ?? false)
+    {
+      sum = (product.price * (100 - (product.percentage ?? 0))) / 100;
+      sum = double.parse(sum.toStringAsFixed(2));
+      String formattedPrice = "$sum ${AppLocalizations.of(context)!.tunisianDinar}";
+    }
+    else{
+      sum = product.price;
+      sum= sum = double.parse(sum.toStringAsFixed(2));
+      String formattedPrice = "$sum ${AppLocalizations.of(context)!.tunisianDinar}";
+    }
     print(product.toString());
     return ScaffoldMessenger(
       key: _detailsProductScaffoldKey,
@@ -149,7 +162,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                             ? Row(
                           children: [
                             Text(
-                              "${(product.price * product.percentage!) / 100} ${AppLocalizations.of(context)!.tunisianDinar}",
+                                formattedPrice!,
+                              // "${(product.price * product.percentage!) / 100} ${AppLocalizations.of(context)!.tunisianDinar}",
                               style: const TextStyle(
                                 fontSize: 16,
                               ),
@@ -164,7 +178,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                               alignment: Alignment.center,
                               children: [
                                 Text(
-                                  "${product.price} ${AppLocalizations.of(context)!.tunisianDinar}",
+                                    formattedPrice!,
+                                  // "${product.price} ${AppLocalizations.of(context)!.tunisianDinar}",
                                   style: const TextStyle(fontSize: 16, color: gray),
                                   textAlign: TextAlign.center,
                                 ),

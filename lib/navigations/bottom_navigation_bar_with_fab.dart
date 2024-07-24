@@ -19,7 +19,8 @@ import '../views/settings.dart';
 import '../views/test.dart';
 
 class BottomNavigationBarWithFAB extends StatefulWidget {
-  const BottomNavigationBarWithFAB({Key? key}) : super(key: key);
+  final int? index;
+  const BottomNavigationBarWithFAB({this.index}) ;
 
   @override
   State<BottomNavigationBarWithFAB> createState() =>
@@ -50,14 +51,16 @@ class _BottomNavigationBarWithFABState
 
   @override
   void initState() {
+    print("indexxxxxxxxxxxxxxxxxxxxxxxxxxx"+widget.index.toString());
     // TODO: implement initState
     getNbNewNotiofications();
+    _currentIndex = widget.index ?? 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var index = ModalRoute.of(context)!.settings.arguments as int?;
       if(index!=null){
 
 
-          _currentIndex=index;
+          _currentIndex=widget.index!;
           _onItemTapped(_currentIndex);
 
 

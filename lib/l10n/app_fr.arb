@@ -93,6 +93,7 @@
   "orderModifiedSuccess": "Commande modifiée avec succès",
   "confirmOrderMessage": "Valider la commande (Total : %totalSum DT)",
   "modifyOrderMessage": "Modifier la commande (Total : %totalSum DT)",
+  "modifyOrder": "Modifier la commande",
   "confirm": "Confirmer",
     "send": "Envoyer",
     "addToCart": "Ajouter au panier",
@@ -118,12 +119,7 @@
   "locationAccessRequired": "L'accès à votre emplacement est requis pour utiliser cette fonctionnalité.",
   "createAccount": "Créer un compte",
   "noRating": "Aucune note",
-
-
-
-
-
-
+  "noCommande": "Aucune  Commande",
 
   "noNotifications": "Aucune notification",
   "noBooking":"Vous n'avez passé aucune réservation pour le moment",
@@ -131,7 +127,12 @@
   "emailNotAssociated": "L'adresse e-mail fournie n'est pas associée à un compte utilisateur",
 
   "tableNotActive": "La table n'est pas active",
-  "tableNotActiveMessage": "Table non active"
-
-
-          }
+  "tableNotActiveMessage": "Table non active",
+  "deleteConfirmation": "Confirmation de suppression",
+  "deleteTitle": "Êtes-vous sûr de vouloir supprimer ce produit ?",
+  "delete": "Supprimer",
+  "ntCommandeTitle": "Notification de commande",
+  "ntCommandeUpdate": "Votre commande a été mise à jour par le gestionnaire avec succès",
+  "ntComandeNew": "Votre commande a été passée avec succès",
+  "ntCommandeConfermed": "Bonjour votre commande a été confirmée vous êtes les bienvenus si vous le souhaitez vous pouvez ajouter de nouveaux produits"
+}

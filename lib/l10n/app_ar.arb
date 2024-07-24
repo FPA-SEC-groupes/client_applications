@@ -83,6 +83,7 @@
   "orderModifiedSuccess": "تم تعديل الطلب بنجاح",
   "confirmOrderMessage": "تأكيد الطلب (المجموع: %totalSum د.ت)",
   "modifyOrderMessage": "تعديل الطلب (المجموع: %totalSum د.ت)",
+  "modifyOrder": "تعديل الطلب",
   "confirm": "تأكيد",
   "send": "إرسال",
   "addToCart": "إضافة إلى السلة",
@@ -92,6 +93,7 @@
   "numberOfGuests": "عدد الضيوف",
   "persons": "أشخاص",
   "tables": "الطاولات",
+  "noCommande": "لا يوجد طلبات",
   "reservationCancelled": "تم إلغاء الحجز",
   "cancelReservation": "إلغاء الحجز",
   "reservation": "الحجز",
@@ -109,5 +111,12 @@
   "noBooking": "لم تقم بأي حجز حتى الآن",
   "emailNotAssociated": "البريد الإلكتروني المقدم غير مرتبط بحساب مستخدم",
   "tableNotActive": "الطاولة غير نشطة.",
-  "tableNotActiveMessage": "الطاولة غير نشطة"
+  "tableNotActiveMessage": "الطاولة غير نشطة",
+  "deleteConfirmation": " التأكيد حذف",
+  "deleteTitle": "هل أنت متأكد أنك تريد حذف هذا المنتج؟",
+  "delete": "حذف",
+  "ntCommandeTitle": "إشعار الطلب",
+  "ntCommandeUpdate": "لقد تم تحديث طلبك بنجاح من قبل المدير",
+  "ntComandeNew": "لقد تم وضع الطلب الخاص بك بنجاح",
+  "ntCommandeConfermed": "مرحبًا، لقد تم تأكيد طلبك، فمرحبًا بك إذا أردت، يمكنك إضافة منتجات جديدة"
 }
