@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hello_way_client/res/app_colors.dart';
 import 'package:hello_way_client/views/home.dart';
+import 'package:hello_way_client/views/login.dart';
 
 import 'package:hello_way_client/views/my_account.dart';
 import 'package:hello_way_client/views/scan_qr_code.dart';
@@ -96,51 +97,55 @@ class _BottomNavigationBarWithFABState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        extendBody: true,
-        resizeToAvoidBottomInset: true,
-      body: Center(
-        child: IndexedStack(
-          index: _currentIndex,
-          children: _interfaces,
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton:
-
-      SizedBox(
-
-        height: 45.0,
-        width: 45.0,
-        child: FittedBox(
-          child: FloatingActionButton(
-            backgroundColor: orange,
-            onPressed: () async {
-
-              await _locationPermissionViewModel.checkLocationPermission(context).then((status) async {
-                // get the current location data
-                // update the state
-                _updateLocation(status);
-                _onItemTapped(2);
-
-              }).catchError((error) {
-                // Handle signup error
-              });
-             // Navigator.pushNamed(context, menuRoute);
-            },
-            elevation: 0,
-            child: const Icon(Icons.qr_code_rounded,size: 30,),
+    return   WillPopScope(
+        onWillPop: () async {
+          return false;
+          },
+        child:Scaffold(
+          extendBody: true,
+          resizeToAvoidBottomInset: true,
+          body: Center(
+            child: IndexedStack(
+              index: _currentIndex,
+              children: _interfaces,
+            ),
           ),
-        ),),
-      bottomNavigationBar: BottomAppBar(
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButton:
 
-        clipBehavior: Clip.antiAlias,
+          SizedBox(
 
-        notchMargin: 5,
-          shape: const CircularNotchedRectangle(
+            height: 45.0,
+            width: 45.0,
+            child: FittedBox(
+              child: FloatingActionButton(
+                backgroundColor: orange,
+                onPressed: () async {
+
+                  await _locationPermissionViewModel.checkLocationPermission(context).then((status) async {
+                    // get the current location data
+                    // update the state
+                    _updateLocation(status);
+                    _onItemTapped(2);
+
+                  }).catchError((error) {
+                    // Handle signup error
+                  });
+                  // Navigator.pushNamed(context, menuRoute);
+                },
+                elevation: 0,
+                child: const Icon(Icons.qr_code_rounded,size: 30,),
+              ),
+            ),),
+          bottomNavigationBar: BottomAppBar(
+
+            clipBehavior: Clip.antiAlias,
+
+            notchMargin: 5,
+            shape: const CircularNotchedRectangle(
 
 
-          ),
+            ),
 
 
             child: Row(
@@ -196,12 +201,18 @@ class _BottomNavigationBarWithFABState
                         nbNotifications=null;
                       });
                     } else {
-                      Navigator.pushNamed(context, loginRoute,arguments: 1);
+                      // MaterialPageRoute(
+                      //   builder: (context) =>  Login(
+                      //       previousPage:'notification'
+                      //   ),
+                      // );
+                      Navigator.pushNamed(context, loginRoute, arguments: {'previousPage': 'notification', 'index': 1},);
+                      // Navigator.pushNamed(context, loginRoute,arguments: 1);
                     }
                   },
                 ),
 
-               const SizedBox(width: 40,),
+                const SizedBox(width: 40,),
                 IconButton(
                   icon: Icon(Icons.perm_identity_sharp,color:_currentIndex == 3 ?orange : Colors.grey),
                   onPressed: () async {
@@ -210,11 +221,11 @@ class _BottomNavigationBarWithFABState
                     if (userId != null) {
                       _onItemTapped(3);
                       setState(() {
-                          _interfaces[3] = MyAccount(); // update the widget with the new values
+                        _interfaces[3] = MyAccount(); // update the widget with the new values
                       });
 
                     } else {
-                      Navigator.pushNamed(context, loginRoute,arguments: 3);
+                      Navigator.pushNamed(context, loginRoute,arguments: {'previousPage': 'compte', 'index': 3});
                     }
 
                   },
@@ -228,6 +239,8 @@ class _BottomNavigationBarWithFABState
               ],
             ),
           )
-    );
+        )
+      );
+    }
   }
-}
+

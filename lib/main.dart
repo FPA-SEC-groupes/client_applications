@@ -27,6 +27,7 @@ import 'l10n/l10n.dart';
 import 'navigations/bottom_navigation_bar_with_fab.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hello_way_client/models/theme_provider.dart';
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Handling a background message: ${message.messageId}');
@@ -51,11 +52,6 @@ Future<void> _initializeNotifications() async {
   );
 }
 
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   await Firebase.initializeApp();
-//   print('Handling a background message: ${message.messageId}');
-// }
-
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
@@ -65,45 +61,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // _requestPermissions();
-    // _configureFirebaseListeners();
   }
-
-  // void _requestPermissions() async {
-  //   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  //   NotificationSettings settings = await messaging.requestPermission(
-  //     alert: true,
-  //     announcement: false,
-  //     badge: true,
-  //     carPlay: false,
-  //     criticalAlert: false,
-  //     provisional: false,
-  //     sound: true,
-  //   );
-  //
-  //   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-  //     print('User granted permission');
-  //   } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-  //     print('User granted provisional permission');
-  //   } else {
-  //     print('User declined or has not accepted permission');
-  //   }
-  // }
-  //
-  // void _configureFirebaseListeners() {
-  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  //     print('Got a message whilst in the foreground!');
-  //     print('Message data: ${message.data}');
-  //
-  //     if (message.notification != null) {
-  //       print('Message also contained a notification: ${message.notification}');
-  //     }
-  //   });
-  //
-  //   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-  //     print('A new onMessageOpenedApp event was published!');
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -123,8 +81,8 @@ class _MyAppState extends State<MyApp> {
           initialData: NetworkStatus.Online,
         ),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+      child: Consumer2<ThemeProvider, LanguageProvider>(
+        builder: (context, themeProvider, languageProvider, child) {
           return MaterialApp(
             theme: themeProvider.isDarkMode ? ThemeData.dark() : ThemeData.light(), // Dynamic theme based on theme setting
             supportedLocales: L10n.all,
@@ -134,7 +92,7 @@ class _MyAppState extends State<MyApp> {
               GlobalCupertinoLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
             ],
-            locale: Provider.of<LanguageProvider>(context, listen: false).locale,
+            locale: languageProvider.locale, // Set locale from LanguageProvider
             title: 'Flutter Demo',
             routes: {
               splashScreenRoute: (context) {

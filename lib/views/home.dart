@@ -42,9 +42,16 @@ class _HomeState extends State<Home> {
   bool _isSearching = false;
   String _searchQuery = '';
   late int numberOfRestriction = 0;
+  bool authentifiedUser=false;
   Future<void> verifyAuthentication() async {
     String? userId = await secureStorage.readData(authentifiedUserId);
     int? id = int.tryParse(userId!);
+    if(id!=null){
+      setState(() {
+        authentifiedUser=true;
+      });
+    }
+
     _restrictionsViewModel.getNumberOfRestrictionsByUserId(id!).then((nb) {
       setState(() {
         numberOfRestriction=nb;
@@ -278,7 +285,7 @@ class _HomeState extends State<Home> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => DetailsSpace(space: space,nb:numberOfRestriction
+                                          builder: (context) => DetailsSpace(space: space,nb:numberOfRestriction, authentifiedUser:authentifiedUser ,
                                           ),
                                         ),
                                       );

@@ -104,6 +104,8 @@
     "reservationCancelled": "Reservation cancelled",
     "cancelReservation": "Cancel reservation",
     "reservation": "Reservation",
+    "table": "Table",
+    "places": "places",
     "passwordResetEmail": "Please provide your email address, and we will send you a new password",
     "location": "Location",
     "about": "About",

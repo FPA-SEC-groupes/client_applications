@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:hello_way_client/views/login.dart';
 import 'package:hello_way_client/widgets/app_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -166,7 +167,15 @@ class _SignUpState extends State<SignUp> {
                             const SizedBox(width: 5),
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, loginRoute);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>  Login(
+                                        previousPage:'signup'
+                                    ),
+                                  ),
+                                );
+                                // Navigator.pushNamed(context, loginRoute);
                               },
                               child: Text(
                                 AppLocalizations.of(context)!.login,

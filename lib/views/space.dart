@@ -6,6 +6,7 @@ import 'package:hello_way_client/res/app_colors.dart';
 import 'package:hello_way_client/utils/secure_storage.dart';
 import 'package:hello_way_client/view_models/RestrictionsViewModel.dart';
 import 'package:hello_way_client/views/add_reservation.dart';
+import 'package:hello_way_client/views/login.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,7 +21,8 @@ import '../models/theme_provider.dart';
 class DetailsSpace extends StatefulWidget {
   final Space space;
   final nb;
-  const DetailsSpace({super.key, required this.space,this.nb });
+  final authentifiedUser;
+  const DetailsSpace({super.key, required this.space,this.nb , this.authentifiedUser});
 
   @override
   _DetailsSpaceState createState() => _DetailsSpaceState();
@@ -33,7 +35,7 @@ class _DetailsSpaceState extends State<DetailsSpace> {
   int _currentPage = 0;
   List<Widget> _pages = [];
   Timer? _timer;
-  bool authentifiedUser = false;
+  // bool authentifiedUser = false;
   late int numberOfRestriction = 0;
 
 
@@ -257,28 +259,37 @@ class _DetailsSpaceState extends State<DetailsSpace> {
                         MaterialButton(
                           height: 50,
                           onPressed: () {
-                            authentifiedUser
+                            widget.authentifiedUser
                                 ? Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => AddReservation(space: widget.space),
                               ),
                             )
-                                : Navigator.pushNamed(context, loginRoute).then((user) async {
-                              // await verifyAuthentication();
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AddReservation(space: widget.space),
+                                : Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>  Login(
+                                    previousPage:'space'
                                 ),
-                              ).then((user) async {
-                                // await verifyAuthentication();
-                              }).catchError((error) {
-                                print(error);
-                              });
-                            }).catchError((error) {
-                              print(error);
-                            });
+                              ),
+                            );
+                            // Navigator.pushNamed(context, loginRoute)
+                            //     .then((user) async {
+                            //   // await verifyAuthentication();
+                            //   await Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => AddReservation(space: widget.space),
+                            //     ),
+                            //   ).then((user) async {
+                            //     // await verifyAuthentication();
+                            //   }).catchError((error) {
+                            //     print(error);
+                            //   });
+                            // }).catchError((error) {
+                            //   print(error);
+                            // });
                           },
                           child: Text(
                             AppLocalizations.of(context)!.book,

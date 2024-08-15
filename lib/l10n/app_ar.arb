@@ -97,6 +97,8 @@
   "reservationCancelled": "تم إلغاء الحجز",
   "cancelReservation": "إلغاء الحجز",
   "reservation": "الحجز",
+  "table": "الطاولة",
+  "places": "الأماكن",
   "passwordResetEmail": "يرجى تقديم عنوان بريد إلكتروني، وسنرسل لك كلمة مرور جديدة",
   "location": "الموقع",
   "about": "عن التطبيق",

@@ -179,7 +179,7 @@ class _CommandDetailsState extends State<CommandDetails> {
                   },
                   child: Text(
                     widget.command.sum>0 ?
-                    AppLocalizations.of(context)!.modifyOrderMessage.replaceAll('%totalSum', widget.command.sum.toString()):
+                    AppLocalizations.of(context)!.modifyOrderMessage.replaceAll('%totalSum', sum.toString()):
                     AppLocalizations.of(context)!.modifyOrder,
                     style: const TextStyle(
                       color: Colors.white,

@@ -95,7 +95,7 @@ class _SettingsState extends State<Settings> {
                     title: Text(AppLocalizations.of(context)!.authentication,
                         style: const TextStyle(fontSize: 16)),
                     onTap: () {
-                      Navigator.pushNamed(context, loginRoute, arguments: 4);
+                      Navigator.pushNamed(context, loginRoute,arguments: {'previousPage': 'setting', 'index': 4});
                     },
                   ),
                 ),

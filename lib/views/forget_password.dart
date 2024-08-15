@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:hello_way_client/utils/routes.dart';
+import 'package:hello_way_client/views/login.dart';
 import 'package:provider/provider.dart';
 import '../models/theme_provider.dart';
 import '../widgets/button.dart';
@@ -100,7 +101,15 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                       final email = _emailController.text.trim();
                       _forgetPasswordViewModel.resetPassword(email).then((message) async {
                         if (message == "Password reset successfully. Please check your email for the new password.") {
-                          Navigator.pushNamed(context, loginRoute);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>  Login(
+                                  previousPage:'password'
+                              ),
+                            ),
+                          );
+                          // Navigator.pushNamed(context, loginRoute);
                         } else if (message == "Error: User not found with the provided email.") {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text(AppLocalizations.of(context)!.emailNotAssociated),

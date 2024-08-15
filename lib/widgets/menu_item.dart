@@ -27,18 +27,18 @@ class _MenuCardState extends State<MenuCard> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     double? sum;
-    String? formattedPrice;
-    if(widget.product.hasActivePromotion ?? false)
-    {
+    String formattedPrice = "";
+
+    if (widget.product.hasActivePromotion ?? false) {
       sum = (widget.product.price * (100 - (widget.product.percentage ?? 0))) / 100;
       sum = double.parse(sum.toStringAsFixed(2));
-      String formattedPrice = "$sum ${AppLocalizations.of(context)!.tunisianDinar}";
-    }
-    else{
+      formattedPrice = "$sum ${AppLocalizations.of(context)!.tunisianDinar}";
+    } else {
       sum = widget.product.price;
-      sum= sum = double.parse(sum.toStringAsFixed(2));
-      String formattedPrice = "$sum ${AppLocalizations.of(context)!.tunisianDinar}";
+      sum = double.parse(sum.toStringAsFixed(2));
+      formattedPrice = "$sum ${AppLocalizations.of(context)!.tunisianDinar}";
     }
+
     return Container(
       color: themeProvider.isDarkMode ? Colors.grey[850] : Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -59,7 +59,7 @@ class _MenuCardState extends State<MenuCard> {
                   color: gray.withOpacity(0.5),
                 )
                     : Image.network(
-                  baseUrl+productUrl+widget.product.images![widget.product.images!.length - 1].fileName, // Assuming the last image's URL is accessed this way
+                  baseUrl + productUrl + widget.product.images!.last.fileName, // Accessing the last image safely
                   errorBuilder: (context, error, stackTrace) {
                     return Icon(
                       Icons.broken_image,
@@ -71,7 +71,8 @@ class _MenuCardState extends State<MenuCard> {
                     return Center(
                       child: CircularProgressIndicator(
                         value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                            ? loadingProgress.cumulativeBytesLoaded /
+                            (loadingProgress.expectedTotalBytes ?? 1)
                             : null,
                       ),
                     );
@@ -135,15 +136,14 @@ class _MenuCardState extends State<MenuCard> {
                           maxLines: 2,
                         ),
                       ),
-                      widget.product.hasActivePromotion!
+                      widget.product.hasActivePromotion ?? false
                           ? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
                               Text(
-                                  formattedPrice!,
-                                // "${(widget.product.price * (100 - widget.product.percentage!)) / 100} DT",
+                                formattedPrice,
                                 style: TextStyle(
                                   color: themeProvider.isDarkMode ? Colors.white : Colors.black,
                                 ),
@@ -158,8 +158,7 @@ class _MenuCardState extends State<MenuCard> {
                                 alignment: Alignment.center,
                                 children: [
                                   Text(
-                                      formattedPrice!,
-                                    // "${widget.product.price} DT",
+                                    "${widget.product.price} ${AppLocalizations.of(context)!.tunisianDinar}",
                                     style: TextStyle(color: gray),
                                     textAlign: TextAlign.center,
                                   ),
@@ -193,7 +192,7 @@ class _MenuCardState extends State<MenuCard> {
                         ],
                       )
                           : Text(
-                        "${widget.product.price} DT",
+                        "${widget.product.price} ${AppLocalizations.of(context)!.tunisianDinar}",
                         style: TextStyle(
                           color: themeProvider.isDarkMode ? Colors.white : Colors.black,
                         ),

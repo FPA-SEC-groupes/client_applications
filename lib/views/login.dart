@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:hello_way_client/models/space.dart';
+import 'package:hello_way_client/navigations/bottom_navigation_bar_with_fab.dart';
 import 'package:hello_way_client/res/app_colors.dart';
 import 'package:hello_way_client/utils/routes.dart';
 import 'package:hello_way_client/view_models/login_view_model.dart';
+import 'package:hello_way_client/views/forget_password.dart';
+import 'package:hello_way_client/views/signup.dart';
+import 'package:hello_way_client/views/space.dart';
 import 'package:hello_way_client/widgets/input_form_password.dart';
 import 'package:provider/provider.dart';
 import '../services/network_service.dart';
@@ -12,7 +17,13 @@ import '../widgets/input_form.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+  final String? previousPage;
+  final Space? space;
+  final int? nb;
+  final bool? authentifiedUser;
+  final int? index;
+
+  const Login({this.previousPage, this.space,this.nb , this.authentifiedUser, this.index}) ;
 
   @override
   State<Login> createState() => _LoginState();
@@ -22,7 +33,8 @@ class _LoginState extends State<Login> {
   final LoginViewModel _loginViewModel = LoginViewModel();
   final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
   late final TextEditingController _usernameController, _passwordController;
-
+  late int? index;
+  late String previousPage="";
   @override
   void initState() {
     super.initState();
@@ -40,8 +52,87 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     NetworkStatus networkStatus = Provider.of<NetworkStatus>(context);
-    final index = ModalRoute.of(context)!.settings.arguments as int?;
-    return Scaffold(
+    // Retrieve arguments as a map
+    final arguments = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+    if (arguments != null) {
+      previousPage = (arguments['previousPage'] as String?)!;
+      index = arguments['index'] as int?;
+    } else {
+      print('No arguments were provided.');
+    }
+    return WillPopScope(
+        onWillPop: () async {
+          if(previousPage=="notification"){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>  BottomNavigationBarWithFAB(
+                  index: 0,
+                ),
+              ),
+            );
+          } else if(previousPage=="setting") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    BottomNavigationBarWithFAB(
+                      index: 4,
+                    ),
+              ),
+            );
+          }else if (previousPage=="compte"){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>  BottomNavigationBarWithFAB(
+                  index: 0,
+                ),
+              ),
+            );
+            print("okkkkkkkkkkkkkkkkkkkkkk"+widget.previousPage!);
+            // switch (widget.previousPage) {
+            //   case 'signup':
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) =>
+            //             SignUp(
+            //             ),
+            //       ),
+            //     );
+            //     break;
+            //   case 'password':
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => ForgetPassword(),
+            //       ),
+            //     );
+            //     break;
+            //   case 'space':
+            //     print("okkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) =>
+            //             DetailsSpace(
+            //                 space: widget.space!,
+            //                 nb: widget.nb,
+            //                 authentifiedUser: widget.authentifiedUser
+            //             ),
+            //       ),
+            //     );
+            //     break;
+            //   default:
+            //     Navigator.pushReplacementNamed(
+            //         context, bottomNavigationWithFABRoute, arguments: index);
+            // }
+          }
+      return true;
+    },
+    child:Scaffold(
       appBar: Toolbar(title: AppLocalizations.of(context)!.login),
       body: networkStatus == NetworkStatus.Online
           ? Center(
@@ -181,7 +272,8 @@ class _LoginState extends State<Login> {
             ],
           ),
         ),
-      ),
+          )
+            ),
     );
   }
 }
