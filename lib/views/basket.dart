@@ -427,8 +427,8 @@ class _BasketState extends State<Basket> {
                     },
                     child: Text(
                      commandId==null ?
-                     AppLocalizations.of(context)!.confirmOrderMessage.replaceAll('%totalSum', _totalSum.toString())
-                      :AppLocalizations.of(context)!.modifyOrderMessage.replaceAll('%totalSum', _totalSum.toString()),
+                     AppLocalizations.of(context)!.confirmOrderMessage.replaceAll('%totalSum', _totalSum.toStringAsFixed(2))
+                      :AppLocalizations.of(context)!.modifyOrderMessage.replaceAll('%totalSum', _totalSum.toStringAsFixed(2)),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
