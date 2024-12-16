@@ -124,13 +124,6 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                   },
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/add-space');
-                  },
-                  child: Text('Go to Add Space Page'),
-                ),
-                const SizedBox(height: 20),
               ],
             ),
           ),

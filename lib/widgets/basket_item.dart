@@ -163,7 +163,7 @@ class _BasketItemState extends State<BasketItem> {
                           InkWell(
                             onTap: widget.onDelete,
                             child: Row(
-                              children: const [
+                              children: [
                                 Icon(
                                   Icons.delete,
                                   color: gray,
@@ -171,7 +171,7 @@ class _BasketItemState extends State<BasketItem> {
                                 ),
                                 SizedBox(width: 5.0),
                                 Text(
-                                  'Remove',
+                                  AppLocalizations.of(context)!.delete,  // This is now non-constant
                                   style: TextStyle(
                                     color: gray,
                                     fontSize: 18,

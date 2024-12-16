@@ -270,7 +270,8 @@ class _DetailsSpaceState extends State<DetailsSpace> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>  Login(
-                                    previousPage:'space'
+                                    previousPage:'space',
+                                   space: widget.space,
                                 ),
                               ),
                             );

@@ -37,6 +37,7 @@ class _UpdateCommandeState extends State<UpdateCommande> {
 
   @override
   void initState() {
+    print(widget.command.toString());
     _basketViewModel = BasketViewModel(context);
     fetchCommandByBasketId();
     validateSessionForUsers();

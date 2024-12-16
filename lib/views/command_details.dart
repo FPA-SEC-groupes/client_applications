@@ -166,6 +166,7 @@ class _CommandDetailsState extends State<CommandDetails> {
                     borderRadius: BorderRadius.circular(5.0), color: orange),
                 margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: MaterialButton(
+
                   onPressed: () {
                     Navigator.push(
                       context,

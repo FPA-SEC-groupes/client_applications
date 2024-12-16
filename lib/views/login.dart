@@ -5,6 +5,7 @@ import 'package:hello_way_client/navigations/bottom_navigation_bar_with_fab.dart
 import 'package:hello_way_client/res/app_colors.dart';
 import 'package:hello_way_client/utils/routes.dart';
 import 'package:hello_way_client/view_models/login_view_model.dart';
+import 'package:hello_way_client/views/add_reservation.dart';
 import 'package:hello_way_client/views/forget_password.dart';
 import 'package:hello_way_client/views/signup.dart';
 import 'package:hello_way_client/views/space.dart';
@@ -194,7 +195,15 @@ class _LoginState extends State<Login> {
                       _loginViewModel.login(context, username, password).then((user) {
                         if (index != null) {
                           Navigator.pushReplacementNamed(context, bottomNavigationWithFABRoute, arguments: index);
-                        } else {
+                        } else if(widget.previousPage=="space"){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddReservation(space: widget.space!),
+                            ),
+                          );
+                        }
+                        else {
                           Navigator.of(context).pop();
                         }
                       }).catchError((error) {
