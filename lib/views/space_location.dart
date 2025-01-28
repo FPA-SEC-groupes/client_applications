@@ -41,7 +41,8 @@ class SpaceLocationState extends State<SpaceLocation> {
           onMapCreated: _onMapCreated,
           initialCameraPosition: CameraPosition(
             target: LatLng(
-                double.parse(space.latitude), double.parse(space.longitude)),
+                double.parse(space.latitude ?? '0.0'), double.parse(space.longitude ?? '0.0')
+            ),
             zoom: 16.0,
           ),
           // enable user location
@@ -54,7 +55,8 @@ class SpaceLocationState extends State<SpaceLocation> {
             Marker(
               markerId: MarkerId(space.title),
               position: LatLng(
-                  double.parse(space.latitude), double.parse(space.longitude)),
+                double.parse(space.latitude ?? '0.0'), double.parse(space.longitude ?? '0.0')
+              ),
               infoWindow: InfoWindow(
                 title: space.title,
               ),

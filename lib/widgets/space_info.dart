@@ -219,7 +219,7 @@ class _SpaceInfoState extends State<SpaceInfo> {
           Padding(
             padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
             child: Text(
-              widget.space.description,
+              widget.space.description ?? '',
               style: TextStyle(
                 fontSize: 14,
                 color: themeProvider.isDarkMode ? Colors.white : Colors.black,

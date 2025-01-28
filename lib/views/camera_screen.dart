@@ -216,14 +216,14 @@ class _CameraScreenState extends State<CameraScreen>
     });
     controller.resumeCamera();
     controller.scannedDataStream.listen((scanData) async {
-      if (result == null &&
-          scanData.format.toString() == 'BarcodeFormat.qrcode') {
+      print('Scanned Data: ${scanData.code}, Format: ${scanData.format}');
+      if (scanData.format == BarcodeFormat.qrcode) { // Ensure format check
         setState(() {
           result = scanData;
           print(result!.code.toString());
         });
         String results = result!.code.toString();
-        String ID = results.substring(results.length - 1);
+        String ID = results.substring(results.lastIndexOf('-') + 1);
         int? id =int.parse(ID);
         final userId = await secureStorage.readData(authentifiedUserId);
         await _qrCodeViewModel.getSpaceValidationById(id).then((response) {
@@ -262,7 +262,6 @@ class _CameraScreenState extends State<CameraScreen>
                 await secureStorage.writeData(tableIdKey, data['tableId']);
                 await secureStorage.writeData(sessionIdKey, data['sessionId']);
                 await secureStorage.writeData(spaceIdKey, data['spaceId']);
-
                 _basketViewModel
                     .getLatestBasketByIdTable(data['tableId'].toString())
                     .then((_) async {
@@ -351,15 +350,8 @@ class _CameraScreenState extends State<CameraScreen>
 
             if(isNetworkFound){
               setState(() {
-                _currentPosition = Position( // Set default values here
-                    latitude: 0.0,
-                    longitude: 0.0,
-                    accuracy: 0.0,
-                    altitude: 0.0,
-                    heading: 0.0,
-                    speed: 0.0,
-                    speedAccuracy: 0.0,
-                    timestamp: DateTime.now());
+                _currentPosition = Position( latitude: 0.0, longitude: 0.0, accuracy: 0.0, altitude: 0.0, heading: 0.0, speed: 0.0,
+                    speedAccuracy: 0.0, altitudeAccuracy: 0.0, headingAccuracy: 0.0, timestamp: DateTime.now());
               });
               if (userId != null) {
                 _qrCodeViewModel
@@ -421,8 +413,6 @@ class _CameraScreenState extends State<CameraScreen>
                     );
 
                   } else {
-
-
                     final spaceId = response['lastname'];
                     final tableId = response['username'].substring(5);
                     await secureStorage.writeData(spaceIdKey,spaceId!);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hello_way_client/models/ProductStatus.dart';
 import 'package:hello_way_client/response/product_with_quantity.dart';
 import 'package:hello_way_client/utils/const.dart';
@@ -47,6 +48,14 @@ class _BasketState extends State<Basket> {
     _command = command;
 
     if (_command?.status == "PAYED") {
+      Fluttertoast.showToast(
+        msg: "Payed",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
       Navigator.pushReplacementNamed(context, bottomNavigationWithFABRoute);
     }
     return command;

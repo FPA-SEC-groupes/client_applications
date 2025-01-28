@@ -99,8 +99,9 @@ class SpacesMapScreenState extends State<SpacesMapScreen> {
     for (var space in spaceList) {
       if (listSpaceCategories.contains(space.category)) {
         LatLng position = LatLng(
-          double.parse(space.latitude),
-          double.parse(space.longitude),
+            double.parse(space.latitude ?? '0.0'),
+            double.parse(space.longitude ?? '0.0')
+    ,
         );
 
         Marker marker = Marker(

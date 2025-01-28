@@ -231,7 +231,7 @@ class _DetailsSpaceState extends State<DetailsSpace> {
               Padding(
                 padding: const EdgeInsets.only(left: 20, right: 20),
                 child: Text(
-                  widget.space.description,
+                  widget.space.description ?? '',
                   style: const TextStyle(
                     fontSize: 14,
                   ),
