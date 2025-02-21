@@ -51,19 +51,23 @@ Future<List<Command>?> getCommandsByUserId() async {
 
   Future<double> getSumOfCommand(int commandId) async {
     try {
-      final response = await await dioInterceptor.dio.get('$baseUrl/api/commands/calculate/sum/$commandId');
+      final response = await dioInterceptor.dio.get('$baseUrl/api/commands/calculate/sum/$commandId');
 
-      if (response.statusCode == 200) {
-        return response.data as double;
-      } else {
-        // Handle other status codes
-        return 0.0;
+      if (response.statusCode == 200 && response.data != null) {
+        if (response.data is Map<String, dynamic> && response.data.containsKey('sum')) {
+          final sum = (response.data['sum'] as num).toDouble();
+          print('Command Sum: $sum');
+          return sum;
+        }
       }
+      // Return 0.0 if the response does not contain a valid sum
+      return 0.0;
     } catch (e) {
-      // Handle exceptions
+      print('Error fetching command sum: $e');
       return 0.0;
     }
   }
+
 
 
 

@@ -1,5 +1,5 @@
-const baseUrl="https://backend-production-b7ef.up.railway.app";
-// const baseUrl = "http://192.168.1.193:8082";
+// const baseUrl="https://backend-production-b7ef.up.railway.app";
+const baseUrl = "http://192.168.1.193:8082";
 const apiKey="AIzaSyCbaCcJ17jjCDAIDCIEATD3NrabhaDi1aU";
 // const productUrl="/photos/product/";
 const spaceUrl ="/photos/space/";

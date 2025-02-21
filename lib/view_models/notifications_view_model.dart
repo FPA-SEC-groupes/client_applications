@@ -77,7 +77,22 @@ class NotificationViewModel{
       throw Exception('Failed to load notifications: $e');
     }
   }
+  Future<void> markAllNotificationsAsSeen() async {
+    String? userId = await secureStorage.readData(authentifiedUserId);
+    final String url = '$baseUrl/api/notifications/providers/$userId/mark-seen';
 
+    try {
+      final response = await dioInterceptor.dio.put(url);
+      if (response.statusCode == 200) {
+        print('All notifications marked as seen');
+        await secureStorage.writeData(nbNewNotifications, "0"); // Reset unseen notifications
+      } else {
+        print('Failed to mark notifications as seen');
+      }
+    } catch (error) {
+      print('Error marking notifications as seen: $error');
+    }
+  }
 
   Future<List<notif.Notification>> fetchNotificationsForUser(String userId) async {
 

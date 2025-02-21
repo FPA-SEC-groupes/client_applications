@@ -228,6 +228,7 @@ class _CameraScreenState extends State<CameraScreen>
         final userId = await secureStorage.readData(authentifiedUserId);
         await _qrCodeViewModel.getSpaceValidationById(id).then((response) {
         if(response['validation'].toString()=="gps"){
+
           if (userId != null) {
             _qrCodeViewModel
               .setUserOnTheTable(
@@ -280,11 +281,11 @@ class _CameraScreenState extends State<CameraScreen>
 
           }
           else {
+
             _qrCodeViewModel
                 .setGuestOnTheTable(result!.code.toString(),
                 _currentPosition,1.5*_currentPosition!.accuracy
             ).then((response) async {
-              print(response);
               if (response ==false) {
                 Navigator.pop(context);
                 showDialog(
@@ -324,30 +325,20 @@ class _CameraScreenState extends State<CameraScreen>
         else if(response['validation'].toString()=="wifi"){
           final spaceId= response['id'];
           _qrCodeViewModel.getWifisBySpaceId(spaceId).then((wifis)  async {
-            print(wifis.toString());
-            // Get the list of available Wi-Fi networks
-            List<WifiNetwork> wifiList = await WiFiForIoTPlugin.loadWifiList();
 
-            // Debug: Print the Wi-Fi lists to verify content
-            print("Available Wi-Fi List: ${wifiList.map((e) => e.ssid).toList()}");
-            print("Wi-Fi List from Space ID: ${wifis.map((e) => e.ssid).toList()}");
+            List<WifiNetwork> wifiList = await WiFiForIoTPlugin.loadWifiList();
             var wifiIterator = wifiList.iterator;
             bool isNetworkFound = false;
             outerLoop:
-            while (wifiIterator.moveNext() && !isNetworkFound) { // Continue until a match is found or list ends
-              var wifi = wifiIterator.current; // Get the current WifiNetwork
+            while (wifiIterator.moveNext() && !isNetworkFound) {
+              var wifi = wifiIterator.current;
               for (var wifiSpace in wifis) {
-                print("Comparing ${wifi.ssid} with ${wifiSpace.ssid}");
                 if (wifi.ssid == wifiSpace.ssid) {
                   isNetworkFound = true;
-                  print("Match found: ${wifi.ssid}");  // Debug: Confirm which SSID matched
                   break; // Break out of the inner loop only
                 }
               }
             }
-// Check if the desired network is in the list of available networks
-//             bool isNetworkFound = wifiList.any((wifi) => wifis.any((wifiSpace) => wifi.ssid == wifiSpace.ssid));
-
             if(isNetworkFound){
               setState(() {
                 _currentPosition = Position( latitude: 0.0, longitude: 0.0, accuracy: 0.0, altitude: 0.0, heading: 0.0, speed: 0.0,

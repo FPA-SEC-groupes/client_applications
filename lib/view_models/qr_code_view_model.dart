@@ -44,7 +44,6 @@ class QrCodeViewModel {
   Future<dynamic> setGuestOnTheTable(String qrCode, Position? position, double accuracy) async {
     final url =
         '$baseUrl/api/auth/signin/qr_Code/$qrCode/userLatitude/${position!.latitude}/userLongitude/${position!.longitude}/${accuracy}';
-
     var cookie = await secureStorage.readData('jwtToken');
 
     final response;
@@ -52,6 +51,7 @@ class QrCodeViewModel {
       response = await dio.post(
         url,
       );
+
     } else {
       response = await dioInterceptor.dio.post(
         url,

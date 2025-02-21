@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:hello_way_client/res/app_colors.dart';
 import 'package:hello_way_client/views/home.dart';
 import 'package:hello_way_client/views/login.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:hello_way_client/views/list_notifications.dart';
+import 'package:hello_way_client/view_models/notifications_view_model.dart';
 import 'package:hello_way_client/views/my_account.dart';
 import 'package:hello_way_client/views/scan_qr_code.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -35,9 +37,11 @@ class _BottomNavigationBarWithFABState
   int _currentIndex = 0;
   PermissionStatus? _status;
    final List<Widget> _interfaces =  [Test(),ListNotifications(),ScanQrCode(),MyAccount(),Settings()];
-
-  String? nbNotifications;
-  StreamSubscription<void>? _streamSubscription;
+    int unseenNotifications = 0;
+    StreamSubscription<void>? _streamSubscription;
+    late NotificationViewModel _notificationViewModel;
+    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+    String? nbNotifications;
   Future<void> getNbNewNotiofications() async {
     const interval = Duration(seconds: 15);
 
@@ -49,25 +53,67 @@ class _BottomNavigationBarWithFABState
       });
     });
   }
+  /// Fetch unseen notifications count
+  Future<void> fetchUnseenNotifications() async {
+    try {
+      String? userId = await secureStorage.readData(authentifiedUserId);
+      if (userId != null) {
+        List notifications = await _notificationViewModel.fetchNewNotificationsForUser(userId);
+        int newUnseenCount = notifications.length;
 
+        if (mounted) {
+          setState(() {
+            unseenNotifications = newUnseenCount;
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching notifications: $e");
+    }
+  }
+
+  /// Listen for Firebase Push Notifications
+  void setupFirebaseNotifications() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      print("New Notification: ${message.notification?.title}");
+
+      // Refresh unseen notifications count
+      fetchUnseenNotifications();
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      print("Notification Clicked: ${message.notification?.title}");
+
+      // When clicked, mark notifications as read
+      await _notificationViewModel.markAllNotificationsAsSeen();
+      setState(() {
+        unseenNotifications = 0;
+      });
+    });
+  }
   @override
   void initState() {
-    print("indexxxxxxxxxxxxxxxxxxxxxxxxxxx"+widget.index.toString());
+
     // TODO: implement initState
+    _notificationViewModel = NotificationViewModel(context);
     getNbNewNotiofications();
     _currentIndex = widget.index ?? 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var index = ModalRoute.of(context)!.settings.arguments as int?;
       if(index!=null){
-
-
           _currentIndex=widget.index!;
           _onItemTapped(_currentIndex);
-
-
       }
     });
+    fetchUnseenNotifications();
 
+    // Listen for Firebase Push Notifications
+    setupFirebaseNotifications();
+
+    // Periodic check every 15 seconds
+    _streamSubscription = Stream.periodic(const Duration(seconds: 15)).listen((_) async {
+      await fetchUnseenNotifications();
+    });
 
 
     super.initState();
@@ -85,16 +131,12 @@ class _BottomNavigationBarWithFABState
       _currentIndex = index;
     });
   }
-
-
-
   void _updateLocation(PermissionStatus status) { // update the state and rebuild the widget tree
     setState(() {
       _status = status;
       _interfaces[2] = ScanQrCode(status: _status,); // update the widget with the new values
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return   WillPopScope(
@@ -112,42 +154,28 @@ class _BottomNavigationBarWithFABState
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           floatingActionButton:
-
           SizedBox(
-
             height: 45.0,
             width: 45.0,
             child: FittedBox(
               child: FloatingActionButton(
                 backgroundColor: orange,
                 onPressed: () async {
-
                   await _locationPermissionViewModel.checkLocationPermission(context).then((status) async {
-                    // get the current location data
-                    // update the state
                     _updateLocation(status);
                     _onItemTapped(2);
-
                   }).catchError((error) {
-                    // Handle signup error
                   });
-                  // Navigator.pushNamed(context, menuRoute);
                 },
                 elevation: 0,
                 child: const Icon(Icons.qr_code_rounded,size: 30,),
               ),
             ),),
           bottomNavigationBar: BottomAppBar(
-
             clipBehavior: Clip.antiAlias,
-
             notchMargin: 5,
             shape: const CircularNotchedRectangle(
-
-
             ),
-
-
             child: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -163,6 +191,17 @@ class _BottomNavigationBarWithFABState
                   Stack(
                     children: [
                       Icon(Icons.notifications_none_rounded,color:_currentIndex == 1 ?orange : Colors.grey),
+                      if (unseenNotifications > 0)
+                        Positioned(
+                          right: -1,
+                          top: 2,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                            constraints: const BoxConstraints(minWidth: 15, minHeight: 15),
+                            child: Text(unseenNotifications.toString(), style: const TextStyle(color: Colors.white, fontSize: 9)),
+                          ),
+                        ),
                       nbNotifications != null && nbNotifications!="0"
                           ? Positioned(
                           right: -1,
@@ -189,6 +228,10 @@ class _BottomNavigationBarWithFABState
                     ],
                   ),
                   onPressed: () async {
+                    await _notificationViewModel.markAllNotificationsAsSeen();
+                    setState(() {
+                      unseenNotifications = 0;
+                    });
                     String? userId = await secureStorage.readData(authentifiedUserId);
                     if (userId != null) {
                       print(userId);
@@ -201,33 +244,23 @@ class _BottomNavigationBarWithFABState
                         nbNotifications=null;
                       });
                     } else {
-                      // MaterialPageRoute(
-                      //   builder: (context) =>  Login(
-                      //       previousPage:'notification'
-                      //   ),
-                      // );
                       Navigator.pushNamed(context, loginRoute, arguments: {'previousPage': 'notification', 'index': 1},);
-                      // Navigator.pushNamed(context, loginRoute,arguments: 1);
                     }
                   },
                 ),
-
                 const SizedBox(width: 40,),
                 IconButton(
                   icon: Icon(Icons.perm_identity_sharp,color:_currentIndex == 3 ?orange : Colors.grey),
                   onPressed: () async {
                     String? userId = await secureStorage.readData(authentifiedUserId);
-                    print("idddddddddddddddddddddddddddddddd"+userId.toString());
                     if (userId != null) {
                       _onItemTapped(3);
                       setState(() {
                         _interfaces[3] = MyAccount(); // update the widget with the new values
                       });
-
                     } else {
                       Navigator.pushNamed(context, loginRoute,arguments: {'previousPage': 'compte', 'index': 3});
                     }
-
                   },
                 ),
                 IconButton(

@@ -37,6 +37,7 @@ class _ListCommandsState extends State<ListCommands> {
   }
 
   Future<double> getSumOfCommand(int commandId) async {
+    print('idddddddddddddddddddddddddddddddddddddddddddddd $commandId');
     double sum = await _listCommandsViewModel.getSumOfCommand(commandId);
     return sum;
   }
